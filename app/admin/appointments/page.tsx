@@ -9,7 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Search, MoreHorizontal, Calendar, Clock, CheckCircle, AlertCircle, Plus, Phone, Mail } from "lucide-react"
-import { db } from "@/lib/database"
+// Use API endpoints from client-side instead of importing server-only database
 
 /**
  * Admin Appointments Page
@@ -37,7 +37,8 @@ export default function AdminAppointmentsPage() {
 
   const loadAppointments = async () => {
     try {
-      const appointmentsData = await db.getAppointments()
+  const res = await fetch('/api/appointments')
+  const appointmentsData = await res.json()
       setAppointments(appointmentsData)
 
       // Calculate stats
@@ -57,7 +58,11 @@ export default function AdminAppointmentsPage() {
 
   const updateAppointmentStatus = async (id: number, status: string) => {
     try {
-      await db.updateAppointmentStatus(id, status)
+      await fetch('/api/appointments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, status }),
+      })
       await loadAppointments() // Reload data
     } catch (error) {
       console.error("[v0] Failed to update appointment status:", error)

@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Clock, User, Wrench } from "lucide-react"
-import { db } from "@/lib/database"
+// Do not import server-only database in client component
 
 interface Appointment {
   id: number
@@ -45,12 +45,27 @@ export function AppointmentCalendar({ onDateSelect, selectedDate, showAppointmen
   const loadAppointments = async () => {
     try {
       setLoading(true)
-      const appointmentsData = await db.getAppointments()
+      const res = await fetch('/api/appointments')
+      const appointmentsData = await res.json()
       setAppointments(appointmentsData)
     } catch (error) {
       console.error("[v0] Failed to load appointments:", error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  // Helper to update status via API if needed elsewhere
+  const updateAppointmentStatus = async (id: number, status: string) => {
+    try {
+      await fetch('/api/appointments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, status }),
+      })
+      await loadAppointments()
+    } catch (error) {
+      console.error('[v0] Failed to update appointment status:', error)
     }
   }
 

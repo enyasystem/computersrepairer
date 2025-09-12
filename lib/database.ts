@@ -1,5 +1,7 @@
 import { neon } from "@neondatabase/serverless"
 
+
+console.log('DATABASE_URL:', process.env.DATABASE_URL)
 const databaseUrl = process.env.DATABASE_URL
 
 if (!databaseUrl) {
