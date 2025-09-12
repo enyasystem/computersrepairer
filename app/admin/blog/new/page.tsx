@@ -10,7 +10,6 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { AdminSidebar } from "@/components/admin/sidebar"
 import { AdminHeader } from "@/components/admin/header"
 import { blogCategories, generateSlug, calculateReadTime, type BlogPost } from "@/lib/blog"
 import { ArrowLeft, Save, Eye, Upload } from "lucide-react"
@@ -88,8 +87,6 @@ export default function NewBlogPostPage() {
 
   return (
     <div className="flex min-h-screen bg-background">
-      <AdminSidebar />
-
       <div className="flex-1 flex flex-col">
         <AdminHeader />
 

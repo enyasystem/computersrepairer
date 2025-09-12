@@ -11,7 +11,6 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
-import { AdminSidebar } from "@/components/admin/sidebar"
 import { AdminHeader } from "@/components/admin/header"
 import { productCategories, generateSKU, type Product } from "@/lib/products"
 import { ArrowLeft, Save, Eye, Upload, Plus, X } from "lucide-react"
@@ -132,8 +131,6 @@ export default function NewProductPage() {
 
   return (
     <div className="flex min-h-screen bg-background">
-      <AdminSidebar />
-
       <div className="flex-1 flex flex-col">
         <AdminHeader />
 
