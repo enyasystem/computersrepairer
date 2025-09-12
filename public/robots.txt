@@ -1,0 +1,19 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://computersrepairer.com/sitemap.xml
+
+# Disallow admin areas
+Disallow: /admin/
+Disallow: /api/
+Disallow: /_next/
+Disallow: /scripts/
+
+# Allow important pages
+Allow: /
+Allow: /services
+Allow: /about
+Allow: /contact
+Allow: /book-appointment
+Allow: /blog
