@@ -1,30 +1,58 @@
-# Computer repair homepage
 
-*Automatically synced with your [v0.app](https://v0.app) deployments*
+# Computer Repairer Web Application
+
+An all-in-one platform for computer repair businesses, featuring online appointment booking, customer management, product shop, blog, and admin dashboard.
 
 [![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/enyasystems-projects/v0-computer-repair-homepage)
-[![Built with v0](https://img.shields.io/badge/Built%20with-v0.app-black?style=for-the-badge)](https://v0.app/chat/projects/KNmZftExXw1)
 
-## Overview
+## Features
 
-This repository will stay in sync with your deployed chats on [v0.app](https://v0.app).
-Any changes you make to your deployed app will be automatically pushed to this repository from [v0.app](https://v0.app).
+- Online appointment booking
+- Admin dashboard for managing appointments, customers, products, and inquiries
+- Blog for sharing news and tips
+- Product shop for selling computer accessories
+- Contact and inquiry forms
+- Responsive and modern UI
+
+## Tech Stack
+
+- Next.js (App Router)
+- TypeScript
+- React
+- Tailwind CSS / PostCSS
+- Vercel (deployment)
+
+## Getting Started
+
+1. **Clone the repository:**
+	```powershell
+	git clone https://github.com/enyasystem/computersrepairer.git
+	cd computersrepairer
+	```
+2. **Install dependencies:**
+	```powershell
+	pnpm install
+	```
+3. **Run the development server:**
+	```powershell
+	pnpm dev
+	```
+	Open [http://localhost:3000](http://localhost:3000) to view the app.
 
 ## Deployment
 
-Your project is live at:
+This project is automatically deployed to Vercel:
 
-**[https://vercel.com/enyasystems-projects/v0-computer-repair-homepage](https://vercel.com/enyasystems-projects/v0-computer-repair-homepage)**
+**[Live Demo](https://vercel.com/enyasystems-projects/v0-computer-repair-homepage)**
 
-## Build your app
+## Project Structure
 
-Continue building your app on:
+- `app/` — Main application pages and routes
+- `components/` — Reusable UI and feature components
+- `lib/` — Utility and data logic
+- `public/` — Static assets
+- `styles/` — Global styles
 
-**[https://v0.app/chat/projects/KNmZftExXw1](https://v0.app/chat/projects/KNmZftExXw1)**
+## License
 
-## How It Works
-
-1. Create and modify your project using [v0.app](https://v0.app)
-2. Deploy your chats from the v0 interface
-3. Changes are automatically pushed to this repository
-4. Vercel deploys the latest version from this repository
+MIT License
