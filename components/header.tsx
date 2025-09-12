@@ -188,18 +188,18 @@ export function Header() {
             >
               Contact
             </Link>
-
+{/* 
             <Button className="hidden lg:inline-flex bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm">
               <Phone className="h-4 w-4 mr-2" />
               Get Support
-            </Button>
+            </Button> */}
 
-            <Button asChild className="hidden lg:inline-flex bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm">
+            {/* <Button asChild className="hidden lg:inline-flex bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm">
               <Link href="/book-appointment">
                 <Calendar className="h-4 w-4 mr-2" />
                 Book Appointment
               </Link>
-            </Button>
+            </Button> */}
 
             <Button
               variant="ghost"
@@ -216,10 +216,10 @@ export function Header() {
               <Search className="h-4 w-4" />
             </Button>
 
-            <Button className="hidden lg:inline-flex bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm">
+            {/* <Button className="hidden lg:inline-flex bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm">
               <Phone className="h-4 w-4 mr-2" />
               Get Support
-            </Button>
+            </Button> */}
 
             <Button asChild className="hidden lg:inline-flex bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm">
               <Link href="/book-appointment">
@@ -317,10 +317,10 @@ export function Header() {
               </Link>
             </Button>
 
-            <Button className="w-full mt-6 bg-primary hover:bg-primary/90">
+            {/* <Button className="w-full mt-6 bg-primary hover:bg-primary/90">
               <Phone className="h-4 w-4 mr-2" />
               Get Support
-            </Button>
+            </Button> */}
           </div>
         </div>
       )}

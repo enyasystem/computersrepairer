@@ -1,19 +1,14 @@
 "use client"
 
 import type React from "react"
-import { Geist, Geist_Mono } from "next/font/google"
+import { Inter } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 
-const geistSans = Geist({
+const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-geist-sans",
-})
-
-const geistMono = Geist_Mono({
-  subsets: ["latin"],
-  variable: "--font-geist-mono",
+  variable: "--font-inter",
 })
 
 export default function ClientLayout({
@@ -55,7 +50,7 @@ export default function ClientLayout({
       <head>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
       </head>
-      <body className={`font-sans ${geistSans.variable} ${geistMono.variable} antialiased`}>
+  <body className={`font-sans ${inter.variable} antialiased`}>
         <Header />
         <main>{children}</main>
         <Footer />
