@@ -19,10 +19,27 @@ import { Search, MoreHorizontal, Calendar, Clock, CheckCircle, AlertCircle, Plus
  *
  * @returns {JSX.Element} The admin appointments page
  */
+interface Appointment {
+  id: number
+  customer_name: string
+  customer_email: string
+  customer_phone?: string
+  service_type: string
+  device_type?: string
+  device_model?: string
+  preferred_date: string
+  preferred_time: string
+  appointment_type: string
+  status: string
+  issue_description?: string
+  notes?: string
+  created_at?: string
+}
+
 export default function AdminAppointmentsPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState("all")
-  const [appointments, setAppointments] = useState([])
+  const [appointments, setAppointments] = useState<Appointment[]>([])
   const [loading, setLoading] = useState(true)
   const [stats, setStats] = useState({
     pending: 0,
@@ -38,7 +55,7 @@ export default function AdminAppointmentsPage() {
   const loadAppointments = async () => {
     try {
   const res = await fetch('/api/appointments')
-  const appointmentsData = await res.json()
+  const appointmentsData = (await res.json()) as Appointment[]
       setAppointments(appointmentsData)
 
       // Calculate stats
