@@ -1,21 +1,26 @@
 "use client"
 
 import type React from "react"
-import { GeistSans } from "geist/font/sans"
-import { GeistMono } from "geist/font/mono"
+import { Geist, Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
-import { useSearchParams } from "next/navigation"
-import { Suspense } from "react"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
+
+const geistSans = Geist({
+  subsets: ["latin"],
+  variable: "--font-geist-sans",
+})
+
+const geistMono = Geist_Mono({
+  subsets: ["latin"],
+  variable: "--font-geist-mono",
+})
 
 export default function ClientLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const searchParams = useSearchParams()
-
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
@@ -50,12 +55,10 @@ export default function ClientLayout({
       <head>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
       </head>
-      <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable} antialiased`}>
-        <Suspense fallback={<div>Loading...</div>}>
-          <Header />
-          <main>{children}</main>
-          <Footer />
-        </Suspense>
+      <body className={`font-sans ${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <Header />
+        <main>{children}</main>
+        <Footer />
         <Analytics />
       </body>
     </html>

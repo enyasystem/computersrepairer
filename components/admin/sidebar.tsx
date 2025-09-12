@@ -16,6 +16,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Wrench,
+  Calendar,
 } from "lucide-react"
 
 /**
@@ -35,6 +36,11 @@ export function AdminSidebar() {
       title: "Dashboard",
       href: "/admin/dashboard",
       icon: LayoutDashboard,
+    },
+    {
+      title: "Appointments",
+      href: "/admin/appointments",
+      icon: Calendar,
     },
     {
       title: "Blog Posts",
@@ -99,7 +105,9 @@ export function AdminSidebar() {
         {/* Navigation */}
         <nav className="flex-1 p-4 space-y-2">
           {navigationItems.map((item) => {
-            const isActive = pathname === item.href
+            const isActive =
+              pathname === item.href ||
+              (item.href === "/admin/appointments" && pathname.startsWith("/admin/appointments"))
             return (
               <Link key={item.href} href={item.href}>
                 <Button

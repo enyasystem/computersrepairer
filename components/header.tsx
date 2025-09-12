@@ -13,7 +13,8 @@ import {
   Headphones,
   Phone,
   Search,
-} from "lucide-react"
+  Calendar,
+} from "@/components/icons"
 import Link from "next/link"
 import { useState, useEffect } from "react"
 
@@ -187,6 +188,27 @@ export function Header() {
             >
               Contact
             </Link>
+
+            <Button className="hidden lg:inline-flex bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm">
+              <Phone className="h-4 w-4 mr-2" />
+              Get Support
+            </Button>
+
+            <Button asChild className="hidden lg:inline-flex bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm">
+              <Link href="/book-appointment">
+                <Calendar className="h-4 w-4 mr-2" />
+                Book Appointment
+              </Link>
+            </Button>
+
+            <Button
+              variant="ghost"
+              size="icon"
+              className="lg:hidden hover:bg-primary/10"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </Button>
           </nav>
 
           <div className="flex items-center gap-3">
@@ -197,6 +219,13 @@ export function Header() {
             <Button className="hidden lg:inline-flex bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm">
               <Phone className="h-4 w-4 mr-2" />
               Get Support
+            </Button>
+
+            <Button asChild className="hidden lg:inline-flex bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm">
+              <Link href="/book-appointment">
+                <Calendar className="h-4 w-4 mr-2" />
+                Book Appointment
+              </Link>
             </Button>
 
             <Button
@@ -280,6 +309,13 @@ export function Header() {
             >
               Contact
             </Link>
+
+            <Button asChild className="block py-3 text-foreground hover:text-primary transition-colors font-medium">
+              <Link href="/book-appointment">
+                <Calendar className="h-4 w-4 mr-2" />
+                Book Appointment
+              </Link>
+            </Button>
 
             <Button className="w-full mt-6 bg-primary hover:bg-primary/90">
               <Phone className="h-4 w-4 mr-2" />

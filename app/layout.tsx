@@ -4,11 +4,14 @@ import "./globals.css"
 import ClientLayout from "./ClientLayout"
 
 export const metadata: Metadata = {
-  title: "ComputersRepairer - Professional IT Support & Computer Repair Services",
+  title: {
+    default: "ComputersRepairer - Professional IT Support & Computer Repair Services",
+    template: "%s | ComputersRepairer",
+  },
   description:
-    "Expert computer repair, IT support, networking solutions, and tech products. Professional, reliable, and affordable technology services for businesses and individuals. Fast turnaround, certified technicians.",
+    "Expert computer repair, IT support, networking solutions, and tech products. Professional, reliable, and affordable technology services for businesses and individuals. Fast turnaround, certified technicians, same-day service available.",
   keywords:
-    "computer repair, IT support, networking, laptop repair, desktop repair, virus removal, data recovery, hardware upgrade, software installation, tech support",
+    "computer repair, IT support, networking, laptop repair, desktop repair, virus removal, data recovery, hardware upgrade, software installation, tech support, same day repair, certified technicians, business IT solutions, home computer repair, emergency IT support",
   authors: [{ name: "ComputersRepairer Team" }],
   creator: "ComputersRepairer",
   publisher: "ComputersRepairer",
@@ -19,41 +22,65 @@ export const metadata: Metadata = {
   openGraph: {
     title: "ComputersRepairer - Professional IT Support & Computer Repair",
     description:
-      "Expert computer repair, IT support, and networking services. Professional, reliable, and affordable solutions for all your technology needs.",
+      "Expert computer repair, IT support, and networking services. Professional, reliable, and affordable solutions for all your technology needs. Same-day service available.",
     url: "https://computersrepairer.com",
     siteName: "ComputersRepairer",
     type: "website",
     locale: "en_US",
     images: [
       {
-        url: "/computer-repair-technician-working.jpg",
+        url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "Professional computer repair technician at work",
+        alt: "ComputersRepairer - Professional IT Support & Computer Repair Services",
+        type: "image/jpeg",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
+    site: "@computersrepairer",
+    creator: "@computersrepairer",
     title: "ComputersRepairer - Professional IT Support & Computer Repair",
     description:
       "Expert computer repair, IT support, and networking services. Professional, reliable, and affordable solutions.",
-    images: ["/computer-repair-technician-working.jpg"],
+    images: [
+      {
+        url: "/og-image.jpg",
+        alt: "ComputersRepairer - Professional IT Support & Computer Repair Services",
+      },
+    ],
   },
   robots: {
     index: true,
     follow: true,
+    nocache: false,
     googleBot: {
       index: true,
       follow: true,
+      noimageindex: false,
       "max-video-preview": -1,
       "max-image-preview": "large",
       "max-snippet": -1,
     },
   },
+  icons: {
+    icon: [
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon.ico", sizes: "any" },
+    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+    other: [{ rel: "mask-icon", url: "/safari-pinned-tab.svg", color: "#059669" }],
+  },
+  manifest: "/site.webmanifest",
   verification: {
     google: "your-google-verification-code",
+    yandex: "your-yandex-verification-code",
+    yahoo: "your-yahoo-verification-code",
   },
+  category: "technology",
+  classification: "Computer Repair Services",
     generator: 'v0.app'
 }
 

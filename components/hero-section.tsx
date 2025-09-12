@@ -1,8 +1,9 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Shield, Zap, Users } from "lucide-react"
+import { ArrowRight, Shield, Zap, Users, Calendar } from "@/components/icons"
 import { useEffect, useState } from "react"
+import Link from "next/link"
 
 export function HeroSection() {
   const [isVisible, setIsVisible] = useState(false)
@@ -46,11 +47,14 @@ export function HeroSection() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 mb-12 animate-fade-in-up animation-delay-400">
               <Button
+                asChild
                 size="lg"
-                className="text-lg px-8 hover:scale-105 transition-transform duration-200 hover:shadow-lg"
+                className="text-lg px-8 bg-emerald-600 hover:bg-emerald-700 hover:scale-105 transition-all duration-200 hover:shadow-lg"
               >
-                Get Started Today
-                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                <Link href="/book-appointment">
+                  <Calendar className="mr-2 h-5 w-5" />
+                  Book Appointment
+                </Link>
               </Button>
               <Button
                 variant="outline"
@@ -58,6 +62,7 @@ export function HeroSection() {
                 className="text-lg px-8 bg-transparent hover:scale-105 transition-transform duration-200"
               >
                 Learn More
+                <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
               </Button>
             </div>
           </div>

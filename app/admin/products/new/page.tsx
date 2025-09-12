@@ -17,6 +17,7 @@ import { productCategories, generateSKU, type Product } from "@/lib/products"
 import { ArrowLeft, Save, Eye, Upload, Plus, X } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
+import { createProduct } from "../actions"
 
 /**
  * Create New Product Page
@@ -81,6 +82,7 @@ export default function NewProductPage() {
   }
 
   const handleSave = async (status: Product["status"]) => {
+    console.log("[v0] handleSave called with status:", status)
     setIsLoading(true)
 
     try {
@@ -89,27 +91,31 @@ export default function NewProductPage() {
         .filter((spec) => spec.key && spec.value)
         .reduce((acc, spec) => ({ ...acc, [spec.key]: spec.value }), {})
 
-      const newProduct: Omit<Product, "id" | "rating" | "reviewCount" | "createdAt" | "updatedAt"> = {
-        ...formData,
-        price: Number.parseFloat(formData.price),
-        originalPrice: formData.originalPrice ? Number.parseFloat(formData.originalPrice) : undefined,
-        stockQuantity: Number.parseInt(formData.stockQuantity),
-        badge: formData.badge || null,
-        status,
-        images: [formData.image],
-        specifications: specsObject,
-      }
+      console.log("[v0] Preparing form data for submission")
 
-      // In a real app, this would make an API call
-      console.log("Saving product:", newProduct)
+      // Create FormData object for server action
+      const formDataForServer = new FormData()
+      formDataForServer.append("name", formData.name)
+      formDataForServer.append("description", formData.description)
+      formDataForServer.append("fullDescription", formData.fullDescription)
+      formDataForServer.append("price", formData.price)
+      if (formData.originalPrice) formDataForServer.append("originalPrice", formData.originalPrice)
+      formDataForServer.append("category", formData.category)
+      formDataForServer.append("brand", formData.brand)
+      formDataForServer.append("sku", formData.sku)
+      formDataForServer.append("image", formData.image)
+      formDataForServer.append("inStock", formData.inStock.toString())
+      formDataForServer.append("stockQuantity", formData.stockQuantity)
+      formDataForServer.append("badge", formData.badge || "none")
+      formDataForServer.append("status", status)
+      formDataForServer.append("specifications", JSON.stringify(specsObject))
 
-      // Simulate API delay
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      console.log("[v0] Calling server action...")
 
-      // Redirect to product management
-      router.push("/admin/products")
+      // Call server action
+      await createProduct(formDataForServer)
     } catch (error) {
-      console.error("Error saving product:", error)
+      console.error("[v0] Error saving product:", error)
     } finally {
       setIsLoading(false)
     }
@@ -350,7 +356,7 @@ export default function NewProductPage() {
                         <SelectValue placeholder="Select badge" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">No Badge</SelectItem>
+                        <SelectItem value="none">No Badge</SelectItem>
                         <SelectItem value="New">New</SelectItem>
                         <SelectItem value="Sale">Sale</SelectItem>
                         <SelectItem value="Best Seller">Best Seller</SelectItem>

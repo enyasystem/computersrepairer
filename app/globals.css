@@ -4,40 +4,40 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Updated color tokens to match admin dashboard design brief */
-  --background: oklch(1 0 0); /* #ffffff - Main background color */
-  --foreground: oklch(0.45 0.02 250); /* #475569 - Primary text color */
-  --card: oklch(0.98 0.02 200); /* #ecfeff - Card background color */
-  --card-foreground: oklch(0.45 0.02 250); /* #475569 - Card text color */
-  --popover: oklch(1 0 0); /* #ffffff - Popover background */
-  --popover-foreground: oklch(0.45 0.02 250); /* #475569 - Popover text */
-  --primary: oklch(0.35 0.08 200); /* #164e63 - Primary for call-to-action buttons */
-  --primary-foreground: oklch(1 0 0); /* #ffffff - Text color on primary actions */
-  --secondary: oklch(0.55 0.15 45); /* #d97706 - Secondary actions and highlights */
-  --secondary-foreground: oklch(1 0 0); /* #ffffff - Text color for secondary actions */
-  --muted: oklch(0.97 0.02 60); /* #fefce8 - Muted background elements */
-  --muted-foreground: oklch(0.5 0.02 240); /* #4b5563 - Muted text */
-  --accent: oklch(0.55 0.15 45); /* #d97706 - Accent color for highlights */
-  --accent-foreground: oklch(1 0 0); /* #ffffff - Text on accent backgrounds */
-  --destructive: oklch(0.55 0.2 15); /* #e3342f - Destructive actions */
-  --destructive-foreground: oklch(1 0 0); /* #ffffff - Text on destructive backgrounds */
-  --border: oklch(0.85 0.01 240); /* #d1d5db - Border color */
-  --input: oklch(0.98 0.005 240); /* #f9fafb - Input fields background */
-  --ring: oklch(0.35 0.08 200 / 0.5); /* rgba(22, 78, 99, 0.5) - Focus ring color */
-  --chart-1: oklch(0.55 0.15 250); /* #3b82f6 - Chart color 1 */
-  --chart-2: oklch(0.65 0.2 35); /* #f97316 - Chart color 2 */
-  --chart-3: oklch(0.7 0.15 140); /* #4ade80 - Chart color 3 */
-  --chart-4: oklch(0.75 0.15 80); /* #fbbf24 - Chart color 4 */
-  --chart-5: oklch(0.6 0.2 290); /* #a855f7 - Chart color 5 */
-  --radius: 0.5rem;
-  --sidebar: oklch(0.98 0.02 200); /* #ecfeff - Sidebar background */
-  --sidebar-foreground: oklch(0.45 0.02 250); /* #475569 - Sidebar text color */
-  --sidebar-primary: oklch(0.35 0.08 200); /* #164e63 - Sidebar primary color */
-  --sidebar-primary-foreground: oklch(1 0 0); /* #ffffff - Sidebar primary text color */
-  --sidebar-accent: oklch(0.55 0.15 45); /* #d97706 - Sidebar accent */
-  --sidebar-accent-foreground: oklch(1 0 0); /* #ffffff - Sidebar accent text */
-  --sidebar-border: oklch(0.85 0.01 240); /* #d1d5db - Sidebar border color */
-  --sidebar-ring: oklch(0.35 0.08 200 / 0.5); /* rgba(22, 78, 99, 0.5) - Sidebar focus ring */
+  /* Updated color tokens to match booking system design brief */
+  --background: #ffffff; /* Main background color */
+  --foreground: #475569; /* Primary text color */
+  --card: #f1f5f9; /* Card background color */
+  --card-foreground: #475569; /* Text on cards */
+  --popover: #ffffff; /* Popover background */
+  --popover-foreground: #475569; /* Text in popovers */
+  --primary: #059669; /* Primary action color */
+  --primary-foreground: #ffffff; /* Text on primary actions */
+  --secondary: #10b981; /* Secondary action color */
+  --secondary-foreground: #ffffff; /* Text on secondary actions */
+  --muted: #f1f5f9; /* Muted background elements */
+  --muted-foreground: #475569; /* Muted text color */
+  --accent: #10b981; /* Accent color for highlights */
+  --accent-foreground: #ffffff; /* Text on accents */
+  --destructive: #d97706; /* Color for alerts or errors */
+  --destructive-foreground: #ffffff; /* Text on alerts */
+  --border: #e5e7eb; /* Border color for cards and inputs */
+  --input: #f1f5f9; /* Input field background */
+  --ring: rgba(5, 150, 105, 0.5); /* Focus ring color */
+  --chart-1: #059669; /* Color for charts or indicators */
+  --chart-2: #10b981; /* Additional chart color */
+  --chart-3: #d97706; /* Another chart color */
+  --chart-4: #15803d; /* Another chart color */
+  --chart-5: #f1f5f9; /* Another chart color */
+  --radius: 0.5rem; /* Corner rounding */
+  --sidebar: #ffffff; /* Sidebar background */
+  --sidebar-foreground: #475569; /* Sidebar text */
+  --sidebar-primary: #f1f5f9; /* Sidebar primary element */
+  --sidebar-primary-foreground: #475569; /* Sidebar text on primary */
+  --sidebar-accent: #10b981; /* Sidebar accent color */
+  --sidebar-accent-foreground: #ffffff; /* Text on sidebar accent */
+  --sidebar-border: #e5e7eb; /* Sidebar border color */
+  --sidebar-ring: rgba(5, 150, 105, 0.5); /* Sidebar focus ring */
 }
 
 .dark {
