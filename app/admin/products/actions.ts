@@ -54,7 +54,7 @@ export async function createProduct(formData: FormData) {
       image_url: imageUrl,
       in_stock: inStock,
       stock_quantity: stockQuantity,
-      badge: badge === "none" ? null : badge,
+  badge: badge === "none" ? undefined : badge,
       status,
       specifications,
     })
@@ -67,6 +67,20 @@ export async function createProduct(formData: FormData) {
     // Redirect to products page
     redirect("/admin/products")
   } catch (error) {
+    // Next.js uses an internal exception to perform redirects from server actions
+    // (it throws a special NEXT_REDIRECT exception). Do not treat that as an
+    // application error – rethrow it without logging so it doesn't appear as a
+    // real error in the console. Log other unexpected errors for debugging.
+    const err: any = error
+    try {
+      const digest = err?.digest || err?.message
+      if (typeof digest === 'string' && digest.startsWith('NEXT_REDIRECT')) {
+        throw err
+      }
+    } catch (checkErr) {
+      // fallthrough to logging if something goes wrong checking
+    }
+
     console.error("[v0] Error creating product:", error)
     throw error
   }

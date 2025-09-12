@@ -109,10 +109,35 @@ export default function NewProductPage() {
       formDataForServer.append("status", status)
       formDataForServer.append("specifications", JSON.stringify(specsObject))
 
-      console.log("[v0] Calling server action...")
+      console.log("[v0] Calling server action with payload:", {
+        name: formData.name,
+        description: formData.description,
+        fullDescription: formData.fullDescription,
+        price: formData.price,
+        originalPrice: formData.originalPrice,
+        category: formData.category,
+        brand: formData.brand,
+        sku: formData.sku,
+        image: formData.image,
+        inStock: formData.inStock,
+        stockQuantity: formData.stockQuantity,
+        badge: formData.badge,
+        status,
+        specifications: specsObject,
+      })
 
       // Call server action
-      await createProduct(formDataForServer)
+      try {
+        await createProduct(formDataForServer)
+      } catch (err: any) {
+        console.error('[v0] Server action error:', {
+          message: err?.message,
+          name: err?.name,
+          stack: err?.stack,
+          serverError: err?.cause || err?.sourceError || null,
+        })
+        throw err
+      }
     } catch (error) {
       console.error("[v0] Error saving product:", error)
     } finally {
@@ -348,7 +373,8 @@ export default function NewProductPage() {
 
                   <div>
                     <Label htmlFor="badge">Badge</Label>
-                    <Select value={formData.badge} onValueChange={(value) => handleInputChange("badge", value)}>
+                    {/* coerce possible null to undefined to satisfy Select value type (string | undefined) */}
+                    <Select value={formData.badge ?? undefined} onValueChange={(value) => handleInputChange("badge", value)}>
                       <SelectTrigger className="mt-1">
                         <SelectValue placeholder="Select badge" />
                       </SelectTrigger>

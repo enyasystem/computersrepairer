@@ -118,23 +118,48 @@ export const db = {
     specifications?: Record<string, string>
   }) {
     console.log("[v0] Creating product:", product)
-    const result = await sql`
-      INSERT INTO products (
-        name, description, full_description, price, original_price, 
-        category, brand, sku, image_url, in_stock, stock_quantity, 
-        badge, status, specifications, is_active
-      )
-      VALUES (
-        ${product.name}, ${product.description}, ${product.full_description || null},
-        ${product.price}, ${product.original_price || null}, ${product.category},
-        ${product.brand}, ${product.sku}, ${product.image_url || null},
-        ${product.in_stock}, ${product.stock_quantity}, ${product.badge || null},
-        ${product.status}, ${JSON.stringify(product.specifications || {})}, true
-      )
-      RETURNING *
-    `
-    console.log("[v0] Product created successfully:", result[0])
-    return result[0]
+    try {
+      // Log DB host to help debug network/DNS issues
+      try {
+        const dbHost = new URL(databaseUrl).hostname
+        console.log(`[v0] Attempting DB insert on host: ${dbHost}`)
+      } catch (e) {
+        // ignore URL parse errors
+      }
+
+      const result = await sql`
+        INSERT INTO products (
+          name, description, full_description, price, original_price, 
+          category, brand, sku, image_url, in_stock, stock_quantity, 
+          badge, status, specifications, is_active
+        )
+        VALUES (
+          ${product.name}, ${product.description}, ${product.full_description || null},
+          ${product.price}, ${product.original_price || null}, ${product.category},
+          ${product.brand}, ${product.sku}, ${product.image_url || null},
+          ${product.in_stock}, ${product.stock_quantity}, ${product.badge || null},
+          ${product.status}, ${JSON.stringify(product.specifications || {})}, true
+        )
+        RETURNING *
+      `
+      console.log("[v0] Product created successfully:", result[0])
+      return result[0]
+    } catch (error) {
+      // Detailed debug logging to surface network/DNS/cause information
+      const err: any = error
+      try {
+        console.error("[v0] SQL error creating product:", {
+          message: err?.message,
+          stack: err?.stack,
+          name: err?.name,
+          cause: err?.cause,
+          sourceError: err?.sourceError || err?.cause || null,
+        })
+      } catch (logErr) {
+        console.error('[v0] Failed to log SQL error details', logErr)
+      }
+      throw error
+    }
   },
 
   // Blog operations
