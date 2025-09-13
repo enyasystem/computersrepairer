@@ -290,31 +290,14 @@ export default function AdminAppointmentsPage() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem>View Details</DropdownMenuItem>
-                        {appointment.status === "pending" && (
-                          <DropdownMenuItem onClick={() => updateAppointmentStatus(appointment.id, "confirmed")}>
-                            Confirm Appointment
-                          </DropdownMenuItem>
-                        )}
-                        {appointment.status === "confirmed" && (
-                          <DropdownMenuItem onClick={() => updateAppointmentStatus(appointment.id, "completed")}>
-                            Mark Completed
-                          </DropdownMenuItem>
-                        )}
-                        <DropdownMenuItem onClick={() => updateAppointmentStatus(appointment.id, "cancelled")}>
-                          Cancel Appointment
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>Contact Customer</DropdownMenuItem>
-                        <DropdownMenuItem>Reschedule</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                    {/* Measured portal action menu to avoid clipping */}
+                    <button onClick={(e) => {
+                      const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
+                      const ev = new CustomEvent('open-appointment-menu', { detail: { id: appointment.id, rect } })
+                      window.dispatchEvent(ev)
+                    }} className="h-8 w-8 p-0 inline-flex items-center justify-center rounded-md bg-transparent hover:bg-slate-100">
+                      <MoreHorizontal className="h-4 w-4" />
+                    </button>
                   </TableCell>
                 </TableRow>
               ))}

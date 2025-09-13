@@ -22,7 +22,7 @@ import { useRouter } from "next/navigation"
  *
  * @returns {JSX.Element} The admin header
  */
-export function AdminHeader() {
+export function AdminHeader({ onOpenSidebar }: { onOpenSidebar?: () => void }) {
   const router = useRouter()
   const user = getCurrentUser()
 
@@ -32,13 +32,22 @@ export function AdminHeader() {
   }
 
   return (
-    <header className="bg-background border-b border-border px-6 py-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <h2 className="text-lg font-semibold text-foreground">Computer Repair Dashboard</h2>
+    <header className="bg-background border-b border-border px-6 py-4 overflow-visible">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex items-center space-x-4 min-w-0 flex-1">
+          {/* Mobile menu button */}
+          <div className="sm:hidden">
+            <Button variant="ghost" size="sm" onClick={() => onOpenSidebar?.()}>
+              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </Button>
+          </div>
+
+          <h2 className="text-lg font-semibold text-foreground truncate">Computer Repair Dashboard</h2>
         </div>
 
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-4 flex-shrink-0">
           {/* Notifications */}
           <Button variant="ghost" size="sm" className="relative">
             <Bell className="h-4 w-4" />
@@ -59,7 +68,7 @@ export function AdminHeader() {
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56" align="end" forceMount>
+            <DropdownMenuContent className="w-56 z-50" align="end" forceMount>
               <DropdownMenuLabel className="font-normal">
                 <div className="flex flex-col space-y-1">
                   <p className="text-sm font-medium leading-none">{user?.name || "Admin User"}</p>

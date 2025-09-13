@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -63,6 +63,80 @@ export default function AdminBlogPage() {
   const handleStatusChange = (postId: string, newStatus: BlogPost["status"]) => {
     // In a real app, this would make an API call
     console.log("Change status:", postId, newStatus)
+  }
+
+  // Measured portal ActionMenu to avoid clipping and ensure proper placement
+  function ActionMenu({ post }: { post: BlogPost }) {
+    const btnRef = useRef<HTMLButtonElement | null>(null)
+    const [open, setOpen] = useState(false)
+    const [pos, setPos] = useState({ top: 0, left: 0 })
+
+    // measure and compute a safe fixed position when opened
+    useEffect(() => {
+      if (!open) return
+      const el = btnRef.current
+      if (!el) return
+      const r = el.getBoundingClientRect()
+      const menuWidth = 220
+      // Prefer aligning menu so its right edge matches trigger right edge
+      let left = r.right - menuWidth
+      if (left < 8) left = r.left
+      if (left + menuWidth > window.innerWidth - 8) left = window.innerWidth - menuWidth - 8
+      const top = r.bottom + 8
+      setPos({ top, left })
+
+      const onScroll = () => setOpen(false)
+      window.addEventListener('scroll', onScroll, true)
+      window.addEventListener('resize', onScroll)
+      return () => {
+        window.removeEventListener('scroll', onScroll, true)
+        window.removeEventListener('resize', onScroll)
+      }
+    }, [open])
+
+    return (
+      <>
+        <button ref={btnRef} onClick={() => setOpen((v) => !v)} className="h-8 w-8 p-0 inline-flex items-center justify-center rounded-md bg-transparent hover:bg-slate-100">
+          <MoreHorizontal className="h-4 w-4" />
+        </button>
+        {open && typeof document !== 'undefined' && (
+          (function renderPortal() {
+            const menu = (
+              <div style={{ position: 'fixed', top: pos.top, left: pos.left, zIndex: 9999, width: 220 }} className="bg-popover text-popover-foreground rounded-md border shadow-md p-2">
+                <div className="text-sm font-medium px-2 py-1">Actions</div>
+                <div className="divide-y">
+                  <div className="px-2 py-2">
+                    <Link href={`/blog/${post.slug}`} className="flex items-center gap-2">
+                      <Eye className="h-4 w-4" />
+                      <span>View Post</span>
+                    </Link>
+                  </div>
+                  <div className="px-2 py-2">
+                    <Link href={`/admin/blog/edit/${post.id}`} className="flex items-center gap-2">
+                      <Edit className="h-4 w-4" />
+                      <span>Edit</span>
+                    </Link>
+                  </div>
+                  <div className="px-2 py-2">
+                    {post.status === 'published' ? (
+                      <button onClick={() => { setOpen(false); handleStatusChange(post.id, 'draft') }} className="w-full text-left">Unpublish</button>
+                    ) : post.status === 'draft' ? (
+                      <button onClick={() => { setOpen(false); handleStatusChange(post.id, 'published') }} className="w-full text-left">Publish</button>
+                    ) : (
+                      <button onClick={() => { setOpen(false); handleStatusChange(post.id, 'archived') }} className="w-full text-left">Archive</button>
+                    )}
+                  </div>
+                  <div className="px-2 py-2">
+                    <button onClick={() => { setOpen(false); handleDeletePost(post.id) }} className="w-full text-left text-destructive">Delete</button>
+                  </div>
+                </div>
+              </div>
+            )
+            return (require('react-dom').createPortal(menu, document.body) as any)
+          })()
+        )}
+      </>
+    )
   }
 
   return (
@@ -130,7 +204,7 @@ export default function AdminBlogPage() {
           <CardTitle>Blog Posts</CardTitle>
           <CardDescription>Manage your blog content and publications</CardDescription>
         </CardHeader>
-        <CardContent>
+  <CardContent>
           <div className="flex flex-col md:flex-row gap-4 mb-6">
             <div className="flex-1">
               <div className="relative">
@@ -173,6 +247,7 @@ export default function AdminBlogPage() {
 
           {/* Posts Table */}
           <div className="rounded-md border">
+            <div className="overflow-auto">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -215,53 +290,14 @@ export default function AdminBlogPage() {
                       <TableCell className="text-sm">{post.author}</TableCell>
                       <TableCell className="text-sm">{new Date(post.date).toLocaleDateString()}</TableCell>
                       <TableCell className="text-right">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <DropdownMenuItem asChild>
-                              <Link href={`/blog/${post.slug}`}>
-                                <Eye className="mr-2 h-4 w-4" />
-                                View Post
-                              </Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem asChild>
-                              <Link href={`/admin/blog/edit/${post.id}`}>
-                                <Edit className="mr-2 h-4 w-4" />
-                                Edit
-                              </Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            {post.status === "published" && (
-                              <DropdownMenuItem onClick={() => handleStatusChange(post.id, "draft")}>
-                                Unpublish
-                              </DropdownMenuItem>
-                            )}
-                            {post.status === "draft" && (
-                              <DropdownMenuItem onClick={() => handleStatusChange(post.id, "published")}>
-                                Publish
-                              </DropdownMenuItem>
-                            )}
-                            <DropdownMenuItem onClick={() => handleStatusChange(post.id, "archived")}>
-                              Archive
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem onClick={() => handleDeletePost(post.id)} className="text-destructive">
-                              <Trash2 className="mr-2 h-4 w-4" />
-                              Delete
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                        <ActionMenu post={post} />
                       </TableCell>
                     </TableRow>
                   ))
                 )}
               </TableBody>
             </Table>
+            </div>
           </div>
         </CardContent>
       </Card>

@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo, useState, useRef, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -109,6 +109,79 @@ export default function AdminProductsClient({ products }: { products: DbProduct[
       console.error(err)
       alert("Status update failed")
     }
+  }
+
+  // Small custom action menu rendered into document.body to avoid clipping/positioning issues
+  function ActionMenu({ product }: { product: DbProduct }) {
+    const btnRef = useRef<HTMLButtonElement | null>(null)
+    const [open, setOpen] = useState(false)
+    const [pos, setPos] = useState({ top: 0, left: 0 })
+
+    useEffect(() => {
+      if (!open) return
+      const el = btnRef.current
+      if (!el) return
+      const r = el.getBoundingClientRect()
+      const menuWidth = 220
+      let left = r.right - menuWidth
+      if (left < 8) left = r.left
+      if (left + menuWidth > window.innerWidth - 8) left = window.innerWidth - menuWidth - 8
+      const top = r.bottom + 8
+      setPos({ top, left })
+      const onScroll = () => setOpen(false)
+      window.addEventListener('scroll', onScroll, true)
+      window.addEventListener('resize', onScroll)
+      return () => {
+        window.removeEventListener('scroll', onScroll, true)
+        window.removeEventListener('resize', onScroll)
+      }
+    }, [open])
+
+    return (
+      <>
+        <button ref={btnRef} onClick={() => setOpen((v) => !v)} className="h-8 w-8 p-0 inline-flex items-center justify-center rounded-md bg-transparent hover:bg-slate-100">
+          <MoreHorizontal className="h-4 w-4" />
+        </button>
+        {open && typeof document !== 'undefined' && (
+          // eslint-disable-next-line react/no-children-prop
+          (function renderPortal() {
+            const menu = (
+              <div style={{ position: 'fixed', top: pos.top, left: pos.left, zIndex: 9999, width: 220 }} className="bg-popover text-popover-foreground rounded-md border shadow-md p-2">
+                <div className="text-sm font-medium px-2 py-1">Actions</div>
+                <div className="divide-y">
+                  <div className="px-2 py-2">
+                    <Link href={`/shop/${product.id}`} className="flex items-center gap-2">
+                      <Eye className="h-4 w-4" />
+                      <span>View Product</span>
+                    </Link>
+                  </div>
+                  <div className="px-2 py-2">
+                    <Link href={`/admin/products/edit/${product.id}`} className="flex items-center gap-2">
+                      <Edit className="h-4 w-4" />
+                      <span>Edit</span>
+                    </Link>
+                  </div>
+                  <div className="px-2 py-2">
+                    {product.status === 'active' ? (
+                      <button onClick={() => { setOpen(false); handleStatusChange(product.id, 'inactive') }} className="w-full text-left">Deactivate</button>
+                    ) : (
+                      <button onClick={() => { setOpen(false); handleStatusChange(product.id, 'active') }} className="w-full text-left">Activate</button>
+                    )}
+                  </div>
+                  <div className="px-2 py-2">
+                    <button onClick={() => { setOpen(false); handleStatusChange(product.id, 'discontinued') }} className="w-full text-left">Discontinue</button>
+                  </div>
+                  <div className="px-2 py-2">
+                    <button onClick={() => { setOpen(false); handleDeleteProduct(product.id) }} className="w-full text-left text-destructive">Delete</button>
+                  </div>
+                </div>
+              </div>
+            )
+            return (require('react-dom').createPortal(menu, document.body) as any)
+          })()
+        )}
+      </>
+    )
   }
 
   return (
@@ -222,7 +295,9 @@ export default function AdminProductsClient({ products }: { products: DbProduct[
           </div>
 
           <div className="rounded-md border">
-            <Table>
+            {/* Desktop/large: table view */}
+            <div className="hidden md:block">
+              <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>Product</TableHead>
@@ -285,53 +360,44 @@ export default function AdminProductsClient({ products }: { products: DbProduct[
                         <Badge variant={product.status === "active" ? "default" : product.status === "inactive" ? "secondary" : "outline"}>{product.status}</Badge>
                       </TableCell>
                       <TableCell className="text-right">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <DropdownMenuItem asChild>
-                              <Link href={`/shop/${product.id}`}>
-                                <Eye className="mr-2 h-4 w-4" />
-                                View Product
-                              </Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem asChild>
-                              <Link href={`/admin/products/edit/${product.id}`}>
-                                <Edit className="mr-2 h-4 w-4" />
-                                Edit
-                              </Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            {product.status === "active" && (
-                              <DropdownMenuItem onClick={() => handleStatusChange(product.id, "inactive")}>
-                                Deactivate
-                              </DropdownMenuItem>
-                            )}
-                            {product.status === "inactive" && (
-                              <DropdownMenuItem onClick={() => handleStatusChange(product.id, "active")}>
-                                Activate
-                              </DropdownMenuItem>
-                            )}
-                            <DropdownMenuItem onClick={() => handleStatusChange(product.id, "discontinued")}>
-                              Discontinue
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem onClick={() => handleDeleteProduct(product.id)} className="text-destructive">
-                              <Trash2 className="mr-2 h-4 w-4" />
-                              Delete
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                        <ActionMenu product={product} />
                       </TableCell>
                     </TableRow>
                   ))
                 )}
               </TableBody>
-            </Table>
+              </Table>
+            </div>
+
+            {/* Mobile: card list with inline actions */}
+            <div className="block md:hidden">
+              <div className="space-y-3 p-3">
+                {filteredProducts.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">No products found matching your criteria.</div>
+                ) : (
+                  filteredProducts.map((product: any) => (
+                    <div key={product.id} className="flex items-center justify-between space-x-3 border rounded-md p-3">
+                      <div className="flex items-center space-x-3">
+                        <div className="relative w-16 h-16 flex-shrink-0 overflow-hidden rounded-md">
+                          <Image src={product.image || "/placeholder.svg"} alt={product.name} fill className="object-cover" />
+                        </div>
+                        <div>
+                          <div className="font-medium truncate max-w-xs">{product.name}</div>
+                          <div className="text-sm text-muted-foreground">{product.brand}</div>
+                          <div className="text-sm">{formatPrice(Number(product.price))}</div>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center space-x-2">
+                        <Link href={`/admin/products/edit/${product.id}`} className="text-sm px-2 py-1 rounded bg-slate-100 hover:bg-slate-200">Edit</Link>
+                        <button onClick={() => handleDeleteProduct(product.id)} className="text-sm px-2 py-1 rounded bg-red-50 text-destructive">Delete</button>
+                        <button onClick={() => handleStatusChange(product.id, product.status === 'active' ? 'inactive' : 'active')} className="text-sm px-2 py-1 rounded bg-slate-50">{product.status === 'active' ? 'Deactivate' : 'Activate'}</button>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>
