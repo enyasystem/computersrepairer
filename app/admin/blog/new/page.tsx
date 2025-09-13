@@ -61,14 +61,29 @@ export default function NewBlogPostPage() {
         updatedAt: new Date().toISOString(),
       }
 
-      // In a real app, this would make an API call
-      console.log("Saving post:", newPost)
+      // POST to API route to persist
+      const res = await fetch('/api/admin/blog', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: newPost.title,
+          slug: newPost.slug,
+          content: newPost.content,
+          excerpt: newPost.excerpt,
+          featured_image: newPost.image,
+          status: newPost.status,
+          author_name: newPost.author,
+          published_at: newPost.status === 'published' ? newPost.createdAt : null,
+        }),
+      })
 
-      // Simulate API delay
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}))
+        throw new Error(err?.error || 'Failed to create post')
+      }
 
-      // Redirect to blog management
-      router.push("/admin/blog")
+      // Redirect to blog management on success
+      router.push('/admin/blog')
     } catch (error) {
       console.error("Error saving post:", error)
     } finally {

@@ -226,7 +226,7 @@ export function AdminSidebar({ isOpen, onClose }: { isOpen?: boolean; onClose?: 
             {!isCollapsed && (
               <div className="text-xs text-sidebar-foreground/60">
                 <p>Computer Repair Admin</p>
-                <p>Version 1.0.0</p>
+                {/* <p>Version 1.0.0</p> */}
               </div>
             )}
           </div>

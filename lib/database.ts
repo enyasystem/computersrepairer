@@ -185,6 +185,43 @@ export const db = {
     return result[0]
   },
 
+  async createBlogPost(post: {
+    title: string
+    slug: string
+    content: string
+    excerpt?: string
+    featured_image?: string
+    status?: string
+    author_name?: string
+    published_at?: string | null
+  }) {
+    try {
+      const result = await sql`
+        INSERT INTO blog_posts (
+          title, slug, content, excerpt, featured_image,
+          status, author_name, published_at
+        ) VALUES (
+          ${post.title}, ${post.slug}, ${post.content}, ${post.excerpt || null}, ${post.featured_image || null},
+          ${post.status || 'draft'}, ${post.author_name || 'Admin'}, ${post.published_at || null}
+        ) RETURNING *
+      `
+      return result[0]
+    } catch (error) {
+      const err: any = error
+      try {
+        console.error('[v0] SQL error creating blog post:', {
+          message: err?.message,
+          stack: err?.stack,
+          name: err?.name,
+          cause: err?.cause,
+        })
+      } catch (logErr) {
+        console.error('[v0] Failed to log SQL error details', logErr)
+      }
+      throw error
+    }
+  },
+
   // Inquiry operations
   async getInquiries() {
     return await sql`
