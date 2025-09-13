@@ -22,14 +22,14 @@ export default function AdminDashboard() {
             <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
             <p className="text-muted-foreground">Quick overview (client fallback)</p>
           </div>
-          <div className="flex items-center space-x-2">
-            <a href="/" target="_blank" rel="noopener noreferrer">
-              <Button variant="ghost">View Site</Button>
-            </a>
-            <a href="/">
-              <Button>Open Site</Button>
-            </a>
-          </div>
+            <div className="flex items-center space-x-2">
+              <Button asChild>
+                <a href="/" target="_blank" rel="noreferrer">View Site</a>
+              </Button>
+              <Button asChild>
+                <a href="/">Open Site</a>
+              </Button>
+            </div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

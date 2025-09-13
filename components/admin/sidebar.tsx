@@ -96,12 +96,15 @@ export function AdminSidebar({ isOpen, onClose }: { isOpen?: boolean; onClose?: 
             {/* Header */}
             <div className="p-4 border-b border-sidebar-border">
               <div className="flex items-center justify-between">
-                {!isCollapsed && (
-                  <div className="flex items-center space-x-2">
-                    <Wrench className="h-6 w-6 text-sidebar-primary" />
-                    <span className="font-bold text-sidebar-foreground">Admin Panel</span>
+                  {!isCollapsed && (
+                    <div className="flex items-center space-x-2">
+                      <Wrench className="h-6 w-6 text-sidebar-primary" />
+                      <span className="font-bold text-sidebar-foreground">Admin Panel</span>
+                    </div>
+                  )}
+                  <div className="hidden lg:flex items-center ml-2">
+                    <a href="/" target="_blank" rel="noreferrer" className="text-sm px-2 py-1 rounded bg-slate-50 hover:bg-slate-100">Visit Site</a>
                   </div>
-                )}
                 <Button
                   variant="ghost"
                   size="sm"
@@ -204,6 +207,18 @@ export function AdminSidebar({ isOpen, onClose }: { isOpen?: boolean; onClose?: 
                 </Link>
               )
             })}
+              {/* Visit public site shortcut */}
+              <a href="/" target="_blank" rel="noreferrer" className="w-full inline-block">
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start bg-yellow-400 hover:bg-yellow-300 py-3 px-3 rounded-xl text-sm font-medium shadow-sm"
+                >
+                  <svg className="h-5 w-5 mr-3" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path d="M12 2v4M12 18v4M4 12h4M16 12h4" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  <span>Visit Site</span>
+                </Button>
+              </a>
           </nav>
 
           {/* Footer */}
