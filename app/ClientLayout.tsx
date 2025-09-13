@@ -5,6 +5,8 @@ import { Inter } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
+import { usePathname } from 'next/navigation'
+import { useEffect, useState } from 'react'
 
 const inter = Inter({
   subsets: ["latin"],
@@ -16,6 +18,12 @@ export default function ClientLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const pathname = usePathname()
+  const [isAdminPath, setIsAdminPath] = useState(false)
+
+  useEffect(() => {
+    setIsAdminPath(Boolean(pathname && pathname.startsWith('/admin')))
+  }, [pathname])
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
@@ -51,9 +59,9 @@ export default function ClientLayout({
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
       </head>
   <body className={`font-sans ${inter.variable} antialiased`}>
-        <Header />
-        <main>{children}</main>
-        <Footer />
+  {!isAdminPath && <Header />}
+  <main>{children}</main>
+  {!isAdminPath && <Footer />}
         <Analytics />
       </body>
     </html>
