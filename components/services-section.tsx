@@ -63,42 +63,34 @@ export function ServicesSection() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {services.map((service, index) => (
-            <Card
+            <div
               key={index}
-              className={`text-center hover:shadow-lg transition-all duration-500 hover:scale-105 hover:-translate-y-2 ${
+              className={`card text-center transform-gpu hover:scale-105 hover:-translate-y-2 transition-all duration-500 ${
                 isVisible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
               }`}
               style={{
-                transitionDelay: isVisible ? `${index * 200}ms` : "0ms",
-                transitionDuration: "800ms",
+                transitionDelay: isVisible ? `${index * 150}ms` : "0ms",
+                transitionDuration: "700ms",
               }}
             >
-              <CardHeader>
-                <div className="bg-primary/10 p-4 rounded-full w-fit mx-auto mb-4 hover:bg-primary/20 transition-colors duration-300 hover:rotate-12 transform transition-transform">
+              <div className="flex flex-col items-center">
+                <div className="bg-primary/10 p-4 rounded-full w-fit mx-auto mb-4 hover:bg-primary/20 transition-colors duration-300 transform-gpu">
                   <service.icon className="h-8 w-8 text-primary" />
                 </div>
-                <CardTitle className="text-xl">{service.title}</CardTitle>
-                <CardDescription className="text-pretty">{service.description}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-2 mb-6">
+                <h3 className="text-xl font-semibold mb-2">{service.title}</h3>
+                <p className="text-sm text-muted-foreground mb-4">{service.description}</p>
+                <ul className="space-y-2 mb-6 text-sm text-muted-foreground">
                   {service.features.map((feature, idx) => (
-                    <li
-                      key={idx}
-                      className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200"
-                    >
+                    <li key={idx} className="hover:text-foreground transition-colors duration-200">
                       • {feature}
                     </li>
                   ))}
                 </ul>
-                <Button
-                  variant="outline"
-                  className="w-full bg-transparent hover:scale-105 transition-transform duration-200"
-                >
+                <Button variant="outline" className="w-full bg-transparent hover:scale-105 transition-transform duration-200">
                   Learn More
                 </Button>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           ))}
         </div>
       </div>

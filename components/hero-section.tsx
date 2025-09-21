@@ -13,20 +13,23 @@ export function HeroSection() {
   }, [])
 
   return (
-    <section className="bg-gradient-to-br from-background to-muted py-20 lg:py-32 overflow-hidden">
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center max-w-7xl mx-auto">
+    <section className="bg-gradient-to-br from-background to-muted py-16 lg:py-28 overflow-hidden">
+      <div className="container">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
           {/* Left side - Hero Image */}
           <div
             className={`order-2 lg:order-1 transition-all duration-1000 ease-out ${
               isVisible ? "translate-x-0 opacity-100" : "-translate-x-full opacity-0"
             }`}
           >
-            <img
-              src="/computer-repair-technician-working.jpg"
-              alt="Computer repair technician working on hardware"
-              className="w-full h-auto rounded-lg shadow-2xl hover:shadow-3xl transition-shadow duration-500 hover:scale-105 transform transition-transform"
-            />
+            <div className="rounded-lg overflow-hidden shadow-2xl hover:shadow-3xl transition-shadow duration-500 transform-gpu">
+              <img
+                src="/computer-repair-technician-working.jpg"
+                alt="Technician repairing a computer"
+                className="w-full h-[420px] object-cover sm:h-[360px] lg:h-[480px] transition-transform duration-500 hover:scale-105"
+                loading="eager"
+              />
+            </div>
           </div>
 
           {/* Right side - Text Content */}
@@ -35,15 +38,18 @@ export function HeroSection() {
               isVisible ? "translate-x-0 opacity-100" : "translate-x-full opacity-0"
             }`}
           >
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-balance mb-6 animate-fade-in-up">
-              Your Trusted Partner in{" "}
-              <span className="text-primary bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent animate-pulse">
-                IT Support & Repair
+            <h1 className="mb-6 animate-fade-in-up">
+              <span className="block text-4xl md:text-5xl lg:text-6xl font-extrabold text-balance leading-tight">
+                Your Trusted Partner
+              </span>
+              <span className="block text-3xl md:text-4xl font-semibold text-primary bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mt-2">
+                in IT Support & Repair
               </span>
             </h1>
-            <p className="text-xl text-muted-foreground mb-8 text-pretty animate-fade-in-up animation-delay-200">
-              Expert solutions for businesses and individuals. Fast, reliable, and professional computer repair and IT
-              support services.
+
+            <p className="text-lg text-muted-foreground mb-8 text-pretty animate-fade-in-up animation-delay-200">
+              Expert solutions for businesses and individuals — fast, reliable, and professional computer repair and IT
+              support services tailored to your needs.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 mb-12 animate-fade-in-up animation-delay-400">
               <Button
@@ -68,7 +74,7 @@ export function HeroSection() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-20 max-w-4xl mx-auto">
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16 max-w-4xl mx-auto">
           {[
             {
               icon: Shield,

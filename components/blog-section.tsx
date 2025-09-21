@@ -72,47 +72,49 @@ export function BlogSection() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {blogPosts.map((post, index) => (
-            <Card
+            <article
               key={index}
-              className={`overflow-hidden hover:shadow-lg transition-all duration-500 hover:scale-105 hover:-translate-y-2 ${
+              className={`card overflow-hidden transform-gpu hover:scale-105 hover:-translate-y-2 transition-all duration-500 ${
                 isVisible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
               }`}
               style={{
-                transitionDelay: isVisible ? `${index * 200 + 300}ms` : "0ms",
-                transitionDuration: "800ms",
+                transitionDelay: isVisible ? `${index * 150 + 200}ms` : "0ms",
+                transitionDuration: "700ms",
               }}
             >
-              <div className="aspect-video bg-muted overflow-hidden">
+              <div className="aspect-[16/9] bg-muted overflow-hidden">
                 <img
                   src={post.image || "/placeholder.svg"}
                   alt={post.title}
-                  className="w-full h-full object-cover hover:scale-110 transition-transform duration-500"
+                  className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
                 />
               </div>
-              <CardHeader>
+
+              <div className="p-4">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
                   <Calendar className="h-4 w-4" />
                   <span>{post.date}</span>
                   <span>•</span>
                   <span>{post.readTime}</span>
                 </div>
-                <CardTitle className="text-lg text-balance hover:text-primary transition-colors duration-200">
+                <h3 className="text-lg font-semibold text-balance hover:text-primary transition-colors duration-200 mb-2">
                   {post.title}
-                </CardTitle>
-                <CardDescription className="text-pretty">{post.description}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Link href={`/blog/${post.slug}`}>
-                  <Button
-                    variant="ghost"
-                    className="p-0 h-auto font-semibold text-primary hover:translate-x-1 transition-transform duration-200 group"
-                  >
-                    Read More
-                    <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
+                </h3>
+                <p className="text-pretty mb-4">{post.description}</p>
+
+                <div className="mt-2">
+                  <Link href={`/blog/${post.slug}`}>
+                    <Button
+                      variant="ghost"
+                      className="p-0 h-auto font-semibold text-primary hover:translate-x-1 transition-transform duration-200 group"
+                    >
+                      Read More
+                      <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </article>
           ))}
         </div>
 
