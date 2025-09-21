@@ -58,6 +58,7 @@ export default function AdminProductsClient({ products, total, page, perPage }: 
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [deletingProduct, setDeletingProduct] = useState<DbProduct | null>(null)
   const [deleting, setDeleting] = useState(false)
+  const [confirmMode, setConfirmMode] = useState<'soft' | 'hard'>('soft')
   
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState<string>("all")
@@ -159,7 +160,41 @@ export default function AdminProductsClient({ products, total, page, perPage }: 
     } catch (e) {
       // ignore
     }
-    await handleDeleteProduct(deletingProduct.id)
+    if (confirmMode === 'soft') {
+      await handleDeleteProduct(deletingProduct.id)
+    } else {
+      await handleHardDeleteProduct(deletingProduct.id)
+    }
+  }
+
+  const handleHardDeleteProduct = async (productId: number) => {
+    setDeleting(true)
+    try {
+      const adminToken = typeof window !== 'undefined' ? localStorage.getItem('adminToken') : null
+      const headers: any = { 'Content-Type': 'application/json' }
+      if (adminToken) headers['x-admin-token'] = adminToken
+
+      const res = await fetch('/api/admin/products/hard-delete', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ id: productId }),
+      })
+      const data = await res.json()
+      if (data?.ok) {
+        setLocalProducts((prev) => prev.filter((p) => p.id !== productId))
+        try { router.refresh() } catch (e) {}
+        try { setConfirmOpen(false) } catch (e) {}
+        try { setDeletingProduct(null) } catch (e) {}
+        try { toast({ title: 'Product permanently deleted', description: 'The product was removed from the database.' }) } catch (e) {}
+      } else {
+        try { toast({ title: 'Hard delete failed', description: String(data?.error || 'Delete failed'), variant: 'destructive' }) } catch (e) {}
+      }
+    } catch (err) {
+      console.error(err)
+      try { toast({ title: 'Hard delete failed', description: 'Network error', variant: 'destructive' }) } catch (e) {}
+    } finally {
+      setDeleting(false)
+    }
   }
 
   const handleStatusChange = async (productId: number, newStatus: string) => {
@@ -246,6 +281,9 @@ export default function AdminProductsClient({ products, total, page, perPage }: 
                   </div>
                   <div className="px-2 py-2">
                     <button onClick={() => { setOpen(false); setDeletingProduct(product); setConfirmOpen(true) }} className="w-full text-left text-destructive">Delete</button>
+                  </div>
+                  <div className="px-2 py-2">
+                    <button onClick={() => { setOpen(false); setDeletingProduct(product); setConfirmMode('hard'); setConfirmOpen(true) }} className="w-full text-left text-destructive">Hard Delete</button>
                   </div>
                 </div>
               </div>
@@ -488,10 +526,14 @@ export default function AdminProductsClient({ products, total, page, perPage }: 
     <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Delete product?</AlertDialogTitle>
-          <AlertDialogDescription>
-            Are you sure you want to delete {deletingProduct?.name}? You can restore it later.
-          </AlertDialogDescription>
+            <AlertDialogTitle>{confirmMode === 'soft' ? 'Delete product?' : 'Permanently delete product?'}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {confirmMode === 'soft' ? (
+                <>Are you sure you want to delete {deletingProduct?.name}? You can restore it later.</>
+              ) : (
+                <>This will permanently remove {deletingProduct?.name} from the database and cannot be undone.</>
+              )}
+            </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>

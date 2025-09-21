@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server"
 import { sql, withRetry } from "@/lib/database"
+import { requireAdmin } from '@/lib/serverAuth'
 
 export async function POST(request: Request) {
+  const auth = requireAdmin(request)
+  if (!auth.ok) return auth.response
   try {
     const body = await request.json()
     const id = Number(body.id)
@@ -12,7 +15,8 @@ export async function POST(request: Request) {
         UPDATE public.products SET is_active = true, updated_at = NOW() WHERE id = ${id} RETURNING *
       `
       try { console.log('[v0] Restored product id=', id, 'result=', r && r[0] ? { id: r[0].id, is_active: r[0].is_active } : null) } catch (e) {}
-      return r
+        try { await (await import('@/lib/cache')).cacheClearPrefix('products:') } catch (e) {}
+        return r
     })
 
     try {

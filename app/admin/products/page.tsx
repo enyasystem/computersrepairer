@@ -6,7 +6,7 @@ export default async function AdminProductsPage({ searchParams }: { searchParams
   const page = Number(searchParams?.page || "1") || 1
   const perPage = Number(searchParams?.perPage || "10") || 10
 
-  const paged = await db.getProductsPaged(page, perPage, { activeOnly: true })
+  const paged = await db.getProductsPaged(page, perPage, { activeOnly: true, bypassCache: true, usePrimary: true })
 
   return <AdminProductsClient products={paged.rows as any} total={paged.total} page={paged.page} perPage={paged.perPage} />
 }

@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server"
 import { sql } from "@/lib/database"
+import { requireAdmin } from '@/lib/serverAuth'
 
 export async function POST(request: Request) {
+  const auth = requireAdmin(request)
+  if (!auth.ok) return auth.response
   try {
     const body = await request.json()
     const id = Number(body.id)

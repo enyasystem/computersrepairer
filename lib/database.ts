@@ -1,4 +1,5 @@
 import { neon } from "@neondatabase/serverless"
+import { cacheGet, cacheSet, cacheDel, cacheClearPrefix } from './cache'
 
 
 console.log('DATABASE_URL:', process.env.DATABASE_URL)
@@ -9,8 +10,27 @@ if (!databaseUrl) {
   throw new Error("DATABASE_URL environment variable is not set. Please check your Neon integration.")
 }
 
+// Detect common Neon pooler/read-replica hostnames and warn when no primary URL set
+try {
+  const parsed = new URL(databaseUrl)
+  const host = parsed.hostname || ''
+  const looksLikeNeonPooler = host.includes('pooler') || host.includes('-pooler') || /neon\.tech$/.test(host) && host.includes('pooler')
+  if (looksLikeNeonPooler && !process.env.DATABASE_PRIMARY_URL) {
+    try {
+      console.warn('[v0] WARNING: DATABASE_URL appears to point to a Neon pooler / replica endpoint (host=', host, ').')
+      console.warn('[v0] For immediate strong-consistency reads (admin pages), set DATABASE_PRIMARY_URL to the primary/writer connection string from the Neon dashboard.')
+    } catch (e) {}
+  }
+} catch (e) {
+  // ignore URL parse failures
+}
+
 // Create a SQL client using Neon
 export const sql = neon(databaseUrl)
+// Optionally allow a dedicated primary DB connection for strong-consistency reads.
+// Set `DATABASE_PRIMARY_URL` in your environment to a primary-only connection string (if provided).
+const primaryDatabaseUrl = process.env.DATABASE_PRIMARY_URL || process.env.DATABASE_URL
+export const primarySql = primaryDatabaseUrl ? neon(primaryDatabaseUrl) : sql
 
 // simple retry helper for transient network/DNS/fetch failures
 export async function withRetry<T>(fn: () => Promise<T>, retries = 5, baseDelay = 500) {
@@ -121,33 +141,35 @@ export const db = {
   },
 
   // Paginated product listing with optional simple server-side in-memory cache
-  async getProductsPaged(page = 1, perPage = 10, opts?: { activeOnly?: boolean }) {
+  async getProductsPaged(page = 1, perPage = 10, opts?: { activeOnly?: boolean; bypassCache?: boolean; usePrimary?: boolean }) {
     const offset = (page - 1) * perPage
     const activeOnly = opts?.activeOnly ?? true
-
     // simple in-memory cache keyed by page/perPage/activeOnly
     const cacheKey = `products:page=${page}:perPage=${perPage}:active=${activeOnly}`
-    // create cache on module if not exists
-    ;(global as any).__productPageCache = (global as any).__productPageCache || new Map()
-    const cache: Map<string, { ts: number; ttl: number; data: any } > = (global as any).__productPageCache
-    const cached = cache.get(cacheKey)
-    const now = Date.now()
     const defaultTtl = 1000 * 30 // 30s
-    if (cached && now - cached.ts < (cached.ttl || defaultTtl)) {
-      try { console.log('[v0] Returning cached products page', cacheKey) } catch (e) {}
-      // return cached copy
-      return cached.data
+    if (!opts?.bypassCache) {
+      try {
+        const cached = await cacheGet(cacheKey)
+        if (cached) {
+          try { console.log('[v0] Returning cached products page', cacheKey) } catch (e) {}
+          return cached
+        }
+      } catch (e) {
+        try { console.warn('[v0] cacheGet failed', e) } catch (e) {}
+      }
     }
 
+    const client = opts?.usePrimary ? primarySql : sql
+
     const query = activeOnly
-      ? sql`
+      ? client`
           SELECT * FROM public.products
           WHERE is_active = true
           ORDER BY category, name
           LIMIT ${perPage}
           OFFSET ${offset}
         `
-      : sql`
+      : client`
           SELECT * FROM public.products
           ORDER BY category, name
           LIMIT ${perPage}
@@ -155,15 +177,32 @@ export const db = {
         `
 
     const countQuery = activeOnly
-      ? sql`SELECT COUNT(*) as count FROM public.products WHERE is_active = true`
-      : sql`SELECT COUNT(*) as count FROM public.products`
+      ? client`SELECT COUNT(*) as count FROM public.products WHERE is_active = true`
+      : client`SELECT COUNT(*) as count FROM public.products`
 
+    const fetchStart = Date.now()
     const result = await withRetry(async () => {
       const [rows, countRes] = await Promise.all([query, countQuery])
       const total = Number(countRes[0].count || 0)
+      // diagnostic: check for any rows which are inactive (shouldn't happen when activeOnly=true)
+      try {
+        const inactiveCount = (rows || []).filter((r: any) => r?.is_active === false).length
+        if (inactiveCount > 0) {
+          try { console.warn('[v0] WARNING: getProductsPaged returning inactive rows count=', inactiveCount, 'page=', page, 'perPage=', perPage, 'activeOnly=', activeOnly) } catch (e) {}
+        }
+        try { console.log('[v0] getProductsPaged rows=', (rows || []).length, 'total=', total) } catch (e) {}
+      } catch (diagErr) {
+        try { console.warn('[v0] getProductsPaged diagnostic failed', diagErr) } catch (e) {}
+      }
       const payload = { rows, total, page, perPage }
-      cache.set(cacheKey, { ts: now, ttl: defaultTtl, data: payload })
-      try { console.log('[v0] Set products page cache', cacheKey, 'cacheSize=', cache.size) } catch (e) {}
+      if (!opts?.bypassCache) {
+        try {
+          await cacheSet(cacheKey, payload, defaultTtl)
+          try { console.log('[v0] Set products page cache', cacheKey) } catch (e) {}
+        } catch (e) {
+          try { console.warn('[v0] cacheSet failed', e) } catch (e) {}
+        }
+      }
       return payload
     })
 
