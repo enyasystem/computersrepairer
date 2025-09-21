@@ -17,6 +17,18 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { productCategories, formatPrice, type Product } from "@/lib/products"
+import { useToast } from "@/hooks/use-toast"
+import { ToastAction } from "@/components/ui/toast"
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogFooter,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogAction,
+  AlertDialogCancel,
+} from "@/components/ui/alert-dialog"
 import { formatCurrencyNGN } from "@/lib/format"
 import { Plus, Search, MoreHorizontal, Edit, Trash2, Eye, Package, AlertTriangle, CheckCircle } from "lucide-react"
 import Link from "next/link"
@@ -41,7 +53,11 @@ type DbProduct = {
 
 export default function AdminProductsClient({ products, total, page, perPage }: { products: DbProduct[]; total?: number; page?: number; perPage?: number }) {
   const router = useRouter()
+  const { toast } = useToast()
   const [localProducts, setLocalProducts] = useState<DbProduct[]>(products || [])
+  const [confirmOpen, setConfirmOpen] = useState(false)
+  const [deletingProduct, setDeletingProduct] = useState<DbProduct | null>(null)
+  const [deleting, setDeleting] = useState(false)
   
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState<string>("all")
@@ -77,7 +93,7 @@ export default function AdminProductsClient({ products, total, page, perPage }: 
   }), [allProducts])
 
   const handleDeleteProduct = async (productId: number) => {
-    if (!confirm("Are you sure you want to delete this product?")) return
+    setDeleting(true)
     try {
       const res = await fetch("/api/admin/products/delete", {
         method: "POST",
@@ -89,13 +105,61 @@ export default function AdminProductsClient({ products, total, page, perPage }: 
         // update local state so counts update immediately without a full reload
         setLocalProducts((prev) => prev.filter((p) => p.id !== productId))
         try { router.refresh() } catch (e) {}
+        // close confirmation modal and clear selection
+        try { setConfirmOpen(false) } catch (e) {}
+        try { setDeletingProduct(null) } catch (e) {}
+        try {
+          toast({
+            title: 'Product deleted',
+            description: 'The product was deleted successfully.',
+            action: (
+              <ToastAction altText="Undo delete" onClick={async () => {
+                try {
+                  const r = await fetch('/api/admin/products/restore', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: productId }),
+                  })
+                  const j = await r.json()
+                  if (j?.ok) {
+                    // restore in local state and refresh
+                    // Note: restored product fields are minimal; a refresh will fetch full data
+                    // For now, call refresh and show a toast
+                    try { router.refresh() } catch (e) {}
+                    toast({ title: 'Restored', description: 'Product restored.' })
+                  } else {
+                    toast({ title: 'Undo failed', description: 'Could not restore product.' })
+                  }
+                } catch (err) {
+                  console.error(err)
+                  toast({ title: 'Undo failed', description: 'Could not restore product.' })
+                }
+              }}
+              >Undo</ToastAction>
+            ) as any,
+          })
+        } catch (e) {}
       } else {
-        alert("Delete failed")
+        try { toast({ title: 'Delete failed', description: String(data?.error || 'Delete failed'), variant: 'destructive' }) } catch (e) {}
       }
     } catch (err) {
       console.error(err)
-      alert("Delete failed")
+      try { toast({ title: 'Delete failed', description: 'Network error', variant: 'destructive' }) } catch (e) {}
+    } finally {
+      setDeleting(false)
     }
+  }
+
+  // Log when the modal Delete button is clicked to help debug id/stack issues
+  const confirmDeleteClicked = async () => {
+    if (!deletingProduct) return
+    try {
+      console.log('[v0][client] Confirm delete clicked id=', deletingProduct.id)
+      console.log('[v0][client] Stack:', new Error().stack)
+    } catch (e) {
+      // ignore
+    }
+    await handleDeleteProduct(deletingProduct.id)
   }
 
   const handleStatusChange = async (productId: number, newStatus: string) => {
@@ -110,12 +174,13 @@ export default function AdminProductsClient({ products, total, page, perPage }: 
         // update local copy to reflect new status immediately
         setLocalProducts((prev) => prev.map((p) => (p.id === productId ? { ...p, status: newStatus } : p)))
         try { router.refresh() } catch (e) {}
+        try { toast({ title: 'Product updated', description: `Status set to ${newStatus}` }) } catch (e) {}
       } else {
-        alert("Status update failed")
+        try { toast({ title: 'Status update failed', description: String(data?.error || 'Update failed'), variant: 'destructive' }) } catch (e) {}
       }
     } catch (err) {
       console.error(err)
-      alert("Status update failed")
+      try { toast({ title: 'Status update failed', description: 'Network error', variant: 'destructive' }) } catch (e) {}
     }
   }
 
@@ -180,7 +245,7 @@ export default function AdminProductsClient({ products, total, page, perPage }: 
                     <button onClick={() => { setOpen(false); handleStatusChange(product.id, 'discontinued') }} className="w-full text-left">Discontinue</button>
                   </div>
                   <div className="px-2 py-2">
-                    <button onClick={() => { setOpen(false); handleDeleteProduct(product.id) }} className="w-full text-left text-destructive">Delete</button>
+                    <button onClick={() => { setOpen(false); setDeletingProduct(product); setConfirmOpen(true) }} className="w-full text-left text-destructive">Delete</button>
                   </div>
                 </div>
               </div>
@@ -398,7 +463,7 @@ export default function AdminProductsClient({ products, total, page, perPage }: 
 
                       <div className="flex items-center space-x-2">
                         <Link href={`/admin/products/edit/${product.id}`} className="text-sm px-2 py-1 rounded bg-slate-100 hover:bg-slate-200">Edit</Link>
-                        <button onClick={() => handleDeleteProduct(product.id)} className="text-sm px-2 py-1 rounded bg-red-50 text-destructive">Delete</button>
+                        <button onClick={() => { setDeletingProduct(product); setConfirmOpen(true) }} className="text-sm px-2 py-1 rounded bg-red-50 text-destructive">Delete</button>
                         <button onClick={() => handleStatusChange(product.id, product.status === 'active' ? 'inactive' : 'active')} className="text-sm px-2 py-1 rounded bg-slate-50">{product.status === 'active' ? 'Deactivate' : 'Activate'}</button>
                       </div>
                     </div>
@@ -419,6 +484,21 @@ export default function AdminProductsClient({ products, total, page, perPage }: 
           </div>
         </div>
       )}
+    {/* Confirm delete dialog */}
+    <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Delete product?</AlertDialogTitle>
+          <AlertDialogDescription>
+            Are you sure you want to delete {deletingProduct?.name}? You can restore it later.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
+          <AlertDialogAction onClick={() => confirmDeleteClicked()} disabled={deleting}>{deleting ? 'Deleting...' : 'Delete'}</AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
     </div>
   )
 }

@@ -224,17 +224,24 @@ export function createInquiry(formData: {
   urgency: string
   message: string
 }): Omit<CustomerInquiry, "id"> {
+  // Ensure urgency is one of the allowed values; default to 'low' otherwise
+  const allowedUrgencies: CustomerInquiry['urgency'][] = ["low", "medium", "high", "emergency"]
+  const urgency = allowedUrgencies.includes(formData.urgency as CustomerInquiry['urgency'])
+    ? (formData.urgency as CustomerInquiry['urgency'])
+    : "low"
+
+  const priority: CustomerInquiry['priority'] =
+    urgency === "emergency" ? "critical" : urgency === "high" ? "high" : urgency === "medium" ? "medium" : "low"
+
   return {
-    ...formData,
+    name: formData.name,
+    email: formData.email,
+    phone: formData.phone,
+    service: formData.service,
+    urgency,
+    message: formData.message,
     status: "new",
-    priority:
-      formData.urgency === "emergency"
-        ? "critical"
-        : formData.urgency === "high"
-          ? "high"
-          : formData.urgency === "medium"
-            ? "medium"
-            : "low",
+    priority,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   }

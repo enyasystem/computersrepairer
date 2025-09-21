@@ -1,3 +1,5 @@
+import React from "react"
+import { useToast, toast } from '@/hooks/use-toast'
 "use client"
 
 import { useState, useRef, useEffect } from "react"
@@ -242,7 +244,7 @@ function CustomerActionMenu({ customer }: { customer: any }) {
   const handleViewRepairs = () => {
     setOpen(false)
     // navigate or open repairs modal - placeholder
-    alert(`Open repairs for ${customer.name}`)
+    try { toast({ title: `Open repairs`, description: `Open repairs for ${customer.name}` }) } catch (e) {}
   }
 
   return (

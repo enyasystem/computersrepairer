@@ -3,6 +3,7 @@
 import type React from "react"
 
 import { Button } from "@/components/ui/button"
+import { useToast, toast } from '@/hooks/use-toast'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -71,7 +72,7 @@ export default function ContactPage() {
     console.log("Form submitted:", inquiryData)
 
     // Show success message (in real app, handle API response)
-    alert("Thank you for your inquiry! We'll get back to you within 24 hours.")
+  try { toast({ title: 'Inquiry received', description: "Thank you for your inquiry! We'll get back to you within 24 hours." }) } catch (e) {}
 
     // Reset form
     setFormData({

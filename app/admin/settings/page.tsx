@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useToast, toast } from '@/hooks/use-toast'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -46,7 +47,7 @@ export default function AdminSettingsPage() {
   const handleSave = () => {
     // Mock save functionality
     console.log("[v0] Settings saved:", { businessInfo, notifications, security })
-    alert("Settings saved successfully!")
+    try { toast({ title: 'Settings saved', description: 'Settings saved successfully!' }) } catch (e) {}
   }
 
   return (

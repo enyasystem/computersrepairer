@@ -13,7 +13,7 @@ if (!databaseUrl) {
 export const sql = neon(databaseUrl)
 
 // simple retry helper for transient network/DNS/fetch failures
-async function withRetry<T>(fn: () => Promise<T>, retries = 3, baseDelay = 300) {
+export async function withRetry<T>(fn: () => Promise<T>, retries = 5, baseDelay = 500) {
   let attempt = 0
   while (true) {
     try {
@@ -21,14 +21,15 @@ async function withRetry<T>(fn: () => Promise<T>, retries = 3, baseDelay = 300) 
     } catch (err: any) {
       attempt++
       const isLast = attempt >= retries
-      // treat network/fetch/DNS errors as retryable
       const msg = err?.message || String(err)
-      console.warn(`[v0] DB query error (attempt ${attempt}/${retries}):`, msg)
+      try { console.warn(`[v0] DB query error (attempt ${attempt}/${retries}):`, msg) } catch (e) {}
       if (isLast) {
-        console.error('[v0] DB query failed after retries')
+        try { console.error('[v0] DB query failed after retries') } catch (e) {}
         throw err
       }
-      const delay = baseDelay * attempt
+      // exponential backoff: baseDelay * 2^(attempt-1)
+      const delay = baseDelay * Math.pow(2, attempt - 1)
+      try { console.log(`[v0] Retrying DB query after ${delay}ms (attempt ${attempt + 1}/${retries})`) } catch (e) {}
       await new Promise((res) => setTimeout(res, delay))
     }
   }
@@ -133,6 +134,7 @@ export const db = {
     const now = Date.now()
     const defaultTtl = 1000 * 30 // 30s
     if (cached && now - cached.ts < (cached.ttl || defaultTtl)) {
+      try { console.log('[v0] Returning cached products page', cacheKey) } catch (e) {}
       // return cached copy
       return cached.data
     }
@@ -161,6 +163,7 @@ export const db = {
       const total = Number(countRes[0].count || 0)
       const payload = { rows, total, page, perPage }
       cache.set(cacheKey, { ts: now, ttl: defaultTtl, data: payload })
+      try { console.log('[v0] Set products page cache', cacheKey, 'cacheSize=', cache.size) } catch (e) {}
       return payload
     })
 
