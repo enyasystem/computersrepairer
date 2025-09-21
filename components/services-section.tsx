@@ -73,13 +73,13 @@ export function ServicesSection() {
                 transitionDuration: "700ms",
               }}
             >
-              <div className="flex flex-col items-center">
+              <div className="flex flex-col items-center md:items-start">
                 <div className="bg-primary/10 p-4 rounded-full w-fit mx-auto mb-4 hover:bg-primary/20 transition-colors duration-300 transform-gpu">
                   <service.icon className="h-8 w-8 text-primary" />
                 </div>
                 <h3 className="text-xl font-semibold mb-2">{service.title}</h3>
                 <p className="text-sm text-muted-foreground mb-4">{service.description}</p>
-                <ul className="space-y-2 mb-6 text-sm text-muted-foreground">
+                <ul className="space-y-2 mb-6 text-sm text-muted-foreground text-left w-full md:w-auto pl-0">
                   {service.features.map((feature, idx) => (
                     <li key={idx} className="hover:text-foreground transition-colors duration-200">
                       • {feature}
