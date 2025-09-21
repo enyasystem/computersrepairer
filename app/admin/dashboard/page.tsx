@@ -71,6 +71,40 @@ export default async function AdminDashboard() {
   const recentProducts = Array.isArray(products) ? products.slice(0, 5) : []
   const recentPosts = Array.isArray(posts) ? posts.slice(0, 5) : []
 
+  // Small presentational helper: skeleton block used when content is missing or loading
+  function SkeletonBlock({ lines = 3 }: { lines?: number }) {
+    return (
+      <div className="animate-pulse" aria-hidden>
+        <div className="h-4 bg-slate-200 rounded w-3/4 mb-2" />
+        {Array.from({ length: lines }).map((_, i) => (
+          <div key={i} className="h-3 bg-slate-200 rounded w-full mb-2" />
+        ))}
+      </div>
+    )
+  }
+
+  function EmptyState({ title, description, cta }: { title: string; description?: string; cta?: { href: string; label: string } }) {
+    return (
+      <div className="py-8 text-center">
+        <div className="mx-auto w-40 h-28 opacity-80">
+          <svg viewBox="0 0 64 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+            <rect x="2" y="10" width="60" height="28" rx="4" stroke="#CBD5E1" strokeWidth="2" fill="#F8FAFC" />
+            <circle cx="12" cy="24" r="4" fill="#E2E8F0" />
+            <rect x="20" y="18" width="36" height="2" rx="1" fill="#E2E8F0" />
+            <rect x="20" y="22" width="26" height="2" rx="1" fill="#E2E8F0" />
+          </svg>
+        </div>
+        <h4 className="mt-4 text-lg font-medium">{title}</h4>
+        {description && <p className="mt-2 text-sm text-muted-foreground">{description}</p>}
+        {cta && (
+          <div className="mt-4">
+            <Link href={cta.href} className="inline-flex items-center px-3 py-2 rounded bg-sky-600 text-white text-sm">{cta.label}</Link>
+          </div>
+        )}
+      </div>
+    )
+  }
+
   return (
     <div className="p-6">
       <div className="flex items-center justify-between">
@@ -123,8 +157,12 @@ export default async function AdminDashboard() {
       <section className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-card rounded p-4">
           <h3 className="text-lg font-semibold">Recent Products</h3>
-          {recentProducts.length === 0 ? (
-            <div className="text-sm text-muted-foreground mt-3">No recent products</div>
+          {unstable ? (
+            <div className="mt-3">
+              <SkeletonBlock lines={4} />
+            </div>
+          ) : recentProducts.length === 0 ? (
+            <EmptyState title="No recent products" description="There are no recently added products to show." cta={{ href: '/admin/products/new', label: 'Add product' }} />
           ) : (
             <ul className="mt-3 space-y-2">
               {recentProducts.map((p: any) => (
@@ -142,8 +180,12 @@ export default async function AdminDashboard() {
 
         <div className="bg-card rounded p-4">
           <h3 className="text-lg font-semibold">Recent Posts</h3>
-          {recentPosts.length === 0 ? (
-            <div className="text-sm text-muted-foreground mt-3">No recent posts</div>
+          {unstable ? (
+            <div className="mt-3">
+              <SkeletonBlock lines={3} />
+            </div>
+          ) : recentPosts.length === 0 ? (
+            <EmptyState title="No recent posts" description="You haven't published any posts yet." cta={{ href: '/admin/blog/new', label: 'Write a post' }} />
           ) : (
             <ul className="mt-3 space-y-2">
               {recentPosts.map((post: any) => (
