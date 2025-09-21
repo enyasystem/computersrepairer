@@ -236,6 +236,58 @@ export const db = {
     }
   },
 
+  async updateProduct(id: number, product: {
+    name?: string
+    description?: string
+    full_description?: string
+    price?: number
+    original_price?: number | null
+    category?: string
+    brand?: string
+    sku?: string
+    image_url?: string | null
+    in_stock?: boolean
+    stock_quantity?: number
+    badge?: string | null
+    status?: string
+    specifications?: Record<string, string>
+    is_active?: boolean
+  }) {
+    // Build a dynamic SET clause using SQL tagged template interpolation
+    try {
+      const result = await sql`
+        UPDATE products SET
+          name = COALESCE(${product.name}, name),
+          description = COALESCE(${product.description}, description),
+          full_description = COALESCE(${product.full_description}, full_description),
+          price = COALESCE(${product.price}, price),
+          original_price = COALESCE(${product.original_price}, original_price),
+          category = COALESCE(${product.category}, category),
+          brand = COALESCE(${product.brand}, brand),
+          sku = COALESCE(${product.sku}, sku),
+          image_url = COALESCE(${product.image_url}, image_url),
+          in_stock = COALESCE(${product.in_stock}, in_stock),
+          stock_quantity = COALESCE(${product.stock_quantity}, stock_quantity),
+          badge = COALESCE(${product.badge}, badge),
+          status = COALESCE(${product.status}, status),
+          specifications = COALESCE(${JSON.stringify(product.specifications || null)}, specifications),
+          is_active = COALESCE(${product.is_active}, is_active),
+          updated_at = NOW()
+        WHERE id = ${id}
+        RETURNING *
+      `
+      return result[0]
+    } catch (error) {
+      const err: any = error
+      try {
+        console.error('[v0] SQL error updating product:', { message: err?.message, stack: err?.stack })
+      } catch (logErr) {
+        console.error('[v0] Failed to log SQL error details', logErr)
+      }
+      throw error
+    }
+  },
+
   // Blog operations
   async getBlogPosts(status?: string) {
     return await withRetry(async () => {
