@@ -5,9 +5,11 @@ import Link from "next/link"
 const formatNumber = (n: number) => n.toLocaleString()
 const formatCurrency = (n: number) => {
   try {
-    return n.toLocaleString(undefined, { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })
+    // Use Nigerian Naira formatting (₦). Use en-NG locale for appropriate separators.
+    return n.toLocaleString('en-NG', { style: 'currency', currency: 'NGN', maximumFractionDigits: 0 })
   } catch {
-    return `$${Math.round(n)}`
+    // Fallback to Naira symbol with rounded integer value
+    return `₦${Math.round(n)}`
   }
 }
 
