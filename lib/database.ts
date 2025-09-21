@@ -12,6 +12,28 @@ if (!databaseUrl) {
 // Create a SQL client using Neon
 export const sql = neon(databaseUrl)
 
+// simple retry helper for transient network/DNS/fetch failures
+async function withRetry<T>(fn: () => Promise<T>, retries = 3, baseDelay = 300) {
+  let attempt = 0
+  while (true) {
+    try {
+      return await fn()
+    } catch (err: any) {
+      attempt++
+      const isLast = attempt >= retries
+      // treat network/fetch/DNS errors as retryable
+      const msg = err?.message || String(err)
+      console.warn(`[v0] DB query error (attempt ${attempt}/${retries}):`, msg)
+      if (isLast) {
+        console.error('[v0] DB query failed after retries')
+        throw err
+      }
+      const delay = baseDelay * attempt
+      await new Promise((res) => setTimeout(res, delay))
+    }
+  }
+}
+
 export async function testConnection() {
   try {
     await sql`SELECT 1 as test`
@@ -86,11 +108,30 @@ export const db = {
 
   // Product operations
   async getProducts() {
-    return await sql`
-      SELECT * FROM products 
-      WHERE is_active = true
-      ORDER BY category, name
-    `
+    return await withRetry(async () => {
+      // Log current schema and search_path for debugging
+      try {
+        const ctx = await sql`SELECT current_schema() as current_schema, current_setting('search_path') as search_path`
+        console.log('[v0] getProducts session schema:', ctx[0])
+      } catch (e) {
+        // ignore
+      }
+
+      const result = await sql`
+        SELECT * FROM public.products 
+        WHERE is_active = true
+        ORDER BY category, name
+      `
+      try {
+        console.log('[v0] getProducts returned rows:', Array.isArray(result) ? result.length : typeof result)
+        if (Array.isArray(result)) {
+          try {
+            console.log('[v0] getProducts sample names:', result.slice(0, 20).map((r: any) => ({ id: r.id, name: r.name })))
+          } catch (e) {}
+        }
+      } catch (e) {}
+      return result
+    })
   },
 
   async getProductById(id: number) {
@@ -164,17 +205,19 @@ export const db = {
 
   // Blog operations
   async getBlogPosts(status?: string) {
-    if (status) {
+    return await withRetry(async () => {
+      if (status) {
+        return await sql`
+          SELECT * FROM blog_posts 
+          WHERE status = ${status}
+          ORDER BY created_at DESC
+        `
+      }
       return await sql`
         SELECT * FROM blog_posts 
-        WHERE status = ${status}
         ORDER BY created_at DESC
       `
-    }
-    return await sql`
-      SELECT * FROM blog_posts 
-      ORDER BY created_at DESC
-    `
+    })
   },
 
   async getBlogPostBySlug(slug: string) {
@@ -251,14 +294,17 @@ export const db = {
   // Analytics operations
   async getAnalytics() {
     const [totalCustomers, totalRepairs, pendingRepairs, completedRepairs, totalRevenue, recentInquiries] =
-      await Promise.all([
-        sql`SELECT COUNT(*) as count FROM customers`,
-        sql`SELECT COUNT(*) as count FROM repair_requests`,
-        sql`SELECT COUNT(*) as count FROM repair_requests WHERE status = 'pending'`,
-        sql`SELECT COUNT(*) as count FROM repair_requests WHERE status = 'completed'`,
-        sql`SELECT COALESCE(SUM(actual_cost), 0) as total FROM repair_requests WHERE status = 'completed'`,
-        sql`SELECT COUNT(*) as count FROM inquiries WHERE created_at >= NOW() - INTERVAL '7 days'`,
-      ])
+      await withRetry(async () =>
+        Promise.all([
+          sql`SELECT COUNT(*) as count FROM customers`,
+          sql`SELECT COUNT(*) as count FROM repair_requests`,
+          sql`SELECT COUNT(*) as count FROM repair_requests WHERE status = 'pending'`,
+          sql`SELECT COUNT(*) as count FROM repair_requests WHERE status = 'completed'`,
+          // Sum actual_cost when available, otherwise fall back to estimated_cost
+          sql`SELECT COALESCE(SUM(COALESCE(actual_cost, estimated_cost)), 0) as total FROM repair_requests WHERE status = 'completed'`,
+          sql`SELECT COUNT(*) as count FROM inquiries WHERE created_at >= NOW() - INTERVAL '7 days'`,
+        ])
+      )
 
     return {
       totalCustomers: totalCustomers[0].count,
