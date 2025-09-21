@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo, useState, useRef, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -39,12 +40,15 @@ type DbProduct = {
 }
 
 export default function AdminProductsClient({ products, total, page, perPage }: { products: DbProduct[]; total?: number; page?: number; perPage?: number }) {
+  const router = useRouter()
+  const [localProducts, setLocalProducts] = useState<DbProduct[]>(products || [])
+  
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState<string>("all")
   const [categoryFilter, setCategoryFilter] = useState<string>("all")
   const [stockFilter, setStockFilter] = useState<string>("all")
 
-  const allProducts = useMemo(() => products || [], [products])
+  const allProducts = useMemo(() => localProducts, [localProducts])
 
   const filteredProducts = useMemo(() => {
     return allProducts.filter((product: any) => {
@@ -82,8 +86,9 @@ export default function AdminProductsClient({ products, total, page, perPage }: 
       })
       const data = await res.json()
       if (data?.ok) {
-        // simple full reload; could be improved with local state update
-        window.location.reload()
+        // update local state so counts update immediately without a full reload
+        setLocalProducts((prev) => prev.filter((p) => p.id !== productId))
+        try { router.refresh() } catch (e) {}
       } else {
         alert("Delete failed")
       }
@@ -102,7 +107,9 @@ export default function AdminProductsClient({ products, total, page, perPage }: 
       })
       const data = await res.json()
       if (data?.ok) {
-        window.location.reload()
+        // update local copy to reflect new status immediately
+        setLocalProducts((prev) => prev.map((p) => (p.id === productId ? { ...p, status: newStatus } : p)))
+        try { router.refresh() } catch (e) {}
       } else {
         alert("Status update failed")
       }
@@ -405,7 +412,7 @@ export default function AdminProductsClient({ products, total, page, perPage }: 
       {/* Pagination controls */}
       {typeof total !== 'undefined' && (
         <div className="flex items-center justify-between">
-          <div className="text-sm text-muted-foreground">Showing page {page} — {products.length} of {total} products</div>
+          <div className="text-sm text-muted-foreground">Showing page {page} — {localProducts.length} products</div>
           <div className="flex items-center space-x-2">
             <Link href={`?page=${Math.max(1, (page || 1) - 1)}&perPage=${perPage || 10}`} className="px-3 py-1 rounded border hover:bg-slate-50">Previous</Link>
             <Link href={`?page=${(page || 1) + 1}&perPage=${perPage || 10}`} className="px-3 py-1 rounded border hover:bg-slate-50">Next</Link>
