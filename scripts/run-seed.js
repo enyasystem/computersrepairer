@@ -20,6 +20,7 @@ function getDatabaseUrl() {
 
   const client = new Client({ connectionString: databaseUrl });
   const sqlFiles = [
+    path.resolve(__dirname, '00-clean-products-blog.sql'),
     path.resolve(__dirname, '01-create-tables.sql'),
     path.resolve(__dirname, '03-add-product-columns.sql'),
     path.resolve(__dirname, '04-add-brand-column.sql'),
