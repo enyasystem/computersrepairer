@@ -12,6 +12,9 @@
   --popover-foreground: oklch(0.145 0 0);
   --primary: oklch(0.205 0 0);
   --primary-foreground: oklch(0.985 0 0);
+  --primary-600: #0f766e;
+  --primary-700: #115e59;
+  --accent-500: #06b6d4;
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
@@ -150,6 +153,28 @@
 
   .card {
     @apply bg-card text-card-foreground border border-border rounded-lg p-6 shadow-sm;
+  }
+
+  .hero-overlay {
+    background: linear-gradient(180deg, rgba(3,7,18,0.06) 0%, rgba(3,7,18,0.02) 60%, rgba(3,7,18,0) 100%);
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  .cta-primary {
+    background-color: var(--primary-600);
+    color: var(--primary-foreground);
+    border-radius: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    box-shadow: 0 8px 20px rgba(15,118,110,0.15);
+    transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+  }
+
+  .cta-primary:hover {
+    background-color: var(--primary-700);
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 12px 30px rgba(15,118,110,0.18);
   }
 
   .container {

@@ -42,7 +42,7 @@ export function HeroSection() {
               <span className="block text-4xl md:text-5xl lg:text-6xl font-extrabold text-balance leading-tight">
                 Your Trusted Partner
               </span>
-              <span className="block text-3xl md:text-4xl font-semibold text-primary bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mt-2">
+              <span className="block text-3xl md:text-4xl font-semibold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mt-2">
                 in IT Support & Repair
               </span>
             </h1>
@@ -51,17 +51,15 @@ export function HeroSection() {
               Expert solutions for businesses and individuals — fast, reliable, and professional computer repair and IT
               support services tailored to your needs.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 mb-12 animate-fade-in-up animation-delay-400">
-              <Button
-                asChild
-                size="lg"
-                className="text-lg px-8 bg-emerald-600 hover:bg-emerald-700 hover:scale-105 transition-all duration-200 hover:shadow-lg"
-              >
-                <Link href="/book-appointment">
-                  <Calendar className="mr-2 h-5 w-5" />
-                  Book Appointment
-                </Link>
-              </Button>
+            <div className="relative">
+              <div className="hero-overlay" aria-hidden="true" />
+              <div className="flex flex-col sm:flex-row gap-4 mb-12 animate-fade-in-up animation-delay-400">
+                <Button asChild size="lg" className="cta-primary text-lg px-6">
+                  <Link href="/book-appointment">
+                    <Calendar className="mr-2 h-5 w-5" />
+                    Book Appointment
+                  </Link>
+                </Button>
               <Button
                 variant="outline"
                 size="lg"
@@ -72,9 +70,11 @@ export function HeroSection() {
               </Button>
             </div>
           </div>
-        </div>
+    </div>
 
-  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16 max-w-4xl mx-auto">
+    </div>
+
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16 max-w-4xl mx-auto">
           {[
             {
               icon: Shield,
@@ -97,11 +97,12 @@ export function HeroSection() {
           ].map((feature, index) => (
             <div
               key={index}
-              className={`flex flex-col items-center text-center transition-all duration-1000 ease-out ${feature.delay} ${
+              className={`flex flex-col items-center text-center transition-all duration-700 ease-out ${feature.delay} ${
                 isVisible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
-              } hover:scale-105 transform transition-transform hover:shadow-lg rounded-lg p-4`}
+              } transform-gpu hover:scale-105 hover:shadow-lg rounded-lg p-6`}
+              style={{ transitionDelay: isVisible ? `${index * 120}ms` : "0ms" }}
             >
-              <div className="bg-primary/10 p-4 rounded-full mb-4 hover:bg-primary/20 transition-colors duration-300 hover:rotate-12 transform transition-transform">
+              <div className="bg-primary/10 p-4 rounded-full mb-4 transition-all duration-300 hover:bg-primary/20 hover:rotate-12">
                 <feature.icon className="h-8 w-8 text-primary" />
               </div>
               <h3 className="font-semibold mb-2">{feature.title}</h3>
@@ -113,3 +114,4 @@ export function HeroSection() {
     </section>
   )
 }
+
