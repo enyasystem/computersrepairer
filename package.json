@@ -4,8 +4,9 @@
   "private": true,
   "scripts": {
     "build": "next build",
-    "dev": "next dev",
-    "lint": "next lint",
+  "dev": "next dev",
+  "test": "vitest",
+  "lint": "next lint",
     "start": "next start"
   },
   "dependencies": {
@@ -64,6 +65,7 @@
     "zod": "3.25.67"
   },
   "devDependencies": {
+    "vitest": "^1.0.0",
     "@tailwindcss/postcss": "^4.1.9",
     "@types/node": "^22",
     "@types/react": "^18",
