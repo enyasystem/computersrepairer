@@ -11,11 +11,26 @@
  */
 export function isAuthenticated(): boolean {
   if (typeof window === "undefined") return false
-  const token = localStorage.getItem("adminToken")
-  console.log("[v0] Checking token:", token)
-  const isAuth = token === "authenticated"
+  const cookie = document.cookie || ''
+  const match = cookie.match(/(?:^|; )admin_jwt=([^;]+)/)
+  const token = match ? decodeURIComponent(match[1]) : null
+  const isAuth = !!token
   console.log("[v0] Authentication result:", isAuth)
   return isAuth
+}
+
+/**
+ * Async check that validates the admin_jwt cookie against the server
+ */
+export async function isAuthenticatedAsync(): Promise<boolean> {
+  if (typeof window === "undefined") return false
+  try {
+    const res = await fetch('/api/admin/me', { method: 'GET', credentials: 'same-origin' })
+    if (res.ok) return true
+    return false
+  } catch (e) {
+    return false
+  }
 }
 
 /**
@@ -23,7 +38,8 @@ export function isAuthenticated(): boolean {
  */
 export function logout(): void {
   if (typeof window !== "undefined") {
-    localStorage.removeItem("adminToken")
+    // Call logout API to clear cookie
+    fetch('/api/admin/logout', { method: 'POST' }).catch(() => {})
   }
 }
 

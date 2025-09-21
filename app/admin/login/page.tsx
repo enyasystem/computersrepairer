@@ -1,57 +1,6 @@
 "use client"
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-
-export default function AdminLoginPage() {
-  const router = useRouter()
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    setError(null)
-    try {
-      const res = await fetch('/api/admin/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
-      })
-      const j = await res.json()
-      if (j?.ok) {
-        router.push('/admin/products')
-      } else {
-        setError(j?.error || 'Login failed')
-      }
-    } catch (err) {
-      setError('Login failed')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  return (
-    <div className="max-w-sm mx-auto mt-24">
-      <h1 className="text-2xl font-bold mb-4">Admin Login</h1>
-      <form onSubmit={submit} className="space-y-3">
-        <Input placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} />
-        <Input placeholder="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-        {error && <div className="text-red-600">{error}</div>}
-        <Button type="submit" disabled={loading}>{loading ? 'Signing in...' : 'Sign in'}</Button>
-      </form>
-    </div>
-  )
-}
-"use client"
-
-import type React from "react"
-
-import { useState } from "react"
+import React, { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -60,14 +9,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Eye, EyeOff, Shield, AlertCircle } from "lucide-react"
 
-/**
- * Admin Login Page Component
- *
- * Provides secure authentication for admin users to access the dashboard.
- * Features include password visibility toggle, form validation, and error handling.
- *
- * @returns {JSX.Element} The admin login page
- */
 export default function AdminLogin() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -76,34 +17,31 @@ export default function AdminLogin() {
   const [error, setError] = useState("")
   const router = useRouter()
 
-  /**
-   * Handles form submission and authentication
-   * @param {React.FormEvent} e - Form submission event
-   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
     setError("")
 
-    console.log("[v0] Login attempt with:", { email, password })
-
     try {
-      // Simulate authentication - replace with actual auth logic
-      if (email === "admin@computersrepairer.com" && password === "admin123") {
-        console.log("[v0] Credentials valid, setting token")
-        // Store auth token in localStorage (use secure httpOnly cookies in production)
-        localStorage.setItem("adminToken", "authenticated")
-        console.log("[v0] Token stored, redirecting to dashboard")
-        setTimeout(() => {
-          router.push("/admin/dashboard")
-        }, 100)
-      } else {
-        console.log("[v0] Invalid credentials provided")
-        setError("Invalid email or password. Please try again.")
+      const res = await fetch('/api/admin/login', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: email, password })
+      })
+
+      // If the server returns 2xx assume login succeeded and cookie was set
+      if (res.ok) {
+        router.push('/admin/products')
+        return
       }
+
+      // Otherwise try to parse error message
+      let j: any = null
+      try { j = await res.json() } catch (_) { /* ignore */ }
+      setError(j?.error || 'Login failed')
     } catch (err) {
-      console.log("[v0] Login error:", err)
-      setError("An error occurred during login. Please try again.")
+      setError('Login failed')
     } finally {
       setIsLoading(false)
     }

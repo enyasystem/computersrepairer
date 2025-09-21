@@ -4,7 +4,7 @@ import type React from "react"
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { isAuthenticated } from "@/lib/auth"
+import { isAuthenticatedAsync } from "@/lib/auth"
 import { Loader2 } from "lucide-react"
 
 interface AuthGuardProps {
@@ -26,9 +26,9 @@ export function AuthGuard({ children }: AuthGuardProps) {
   const router = useRouter()
 
   useEffect(() => {
-    const checkAuth = () => {
+    const checkAuth = async () => {
       console.log("[v0] Checking authentication status")
-      const authenticated = isAuthenticated()
+      const authenticated = await isAuthenticatedAsync()
       console.log("[v0] Authentication result:", authenticated)
       setIsAuthed(authenticated)
 
