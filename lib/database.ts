@@ -210,6 +210,7 @@ export const db = {
   },
 
   async getProductById(id: number) {
+    // By default read from the pooler/sql client. Callers can pass `usePrimary` to force read from primary.
     const result = await sql`
       SELECT * FROM products 
       WHERE id = ${id}

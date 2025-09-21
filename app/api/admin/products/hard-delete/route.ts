@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { sql } from "@/lib/database"
+import { sql, primarySql } from "@/lib/database"
 import { requireAdmin } from '@/lib/serverAuth'
 
 export async function POST(request: Request) {
@@ -11,8 +11,8 @@ export async function POST(request: Request) {
     const id = Number(body.id)
     if (!id) return NextResponse.json({ error: 'Invalid id' }, { status: 400 })
 
-    // Perform hard delete
-    const result = await sql`
+    // Perform hard delete on primary to ensure replica/reads reflect deletion
+    const result = await primarySql`
       DELETE FROM public.products WHERE id = ${id} RETURNING id
     `
 
