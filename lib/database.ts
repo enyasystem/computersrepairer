@@ -119,6 +119,54 @@ export const db = {
     })
   },
 
+  // Paginated product listing with optional simple server-side in-memory cache
+  async getProductsPaged(page = 1, perPage = 10, opts?: { activeOnly?: boolean }) {
+    const offset = (page - 1) * perPage
+    const activeOnly = opts?.activeOnly ?? true
+
+    // simple in-memory cache keyed by page/perPage/activeOnly
+    const cacheKey = `products:page=${page}:perPage=${perPage}:active=${activeOnly}`
+    // create cache on module if not exists
+    ;(global as any).__productPageCache = (global as any).__productPageCache || new Map()
+    const cache: Map<string, { ts: number; ttl: number; data: any } > = (global as any).__productPageCache
+    const cached = cache.get(cacheKey)
+    const now = Date.now()
+    const defaultTtl = 1000 * 30 // 30s
+    if (cached && now - cached.ts < (cached.ttl || defaultTtl)) {
+      // return cached copy
+      return cached.data
+    }
+
+    const query = activeOnly
+      ? sql`
+          SELECT * FROM public.products
+          WHERE is_active = true
+          ORDER BY category, name
+          LIMIT ${perPage}
+          OFFSET ${offset}
+        `
+      : sql`
+          SELECT * FROM public.products
+          ORDER BY category, name
+          LIMIT ${perPage}
+          OFFSET ${offset}
+        `
+
+    const countQuery = activeOnly
+      ? sql`SELECT COUNT(*) as count FROM public.products WHERE is_active = true`
+      : sql`SELECT COUNT(*) as count FROM public.products`
+
+    const result = await withRetry(async () => {
+      const [rows, countRes] = await Promise.all([query, countQuery])
+      const total = Number(countRes[0].count || 0)
+      const payload = { rows, total, page, perPage }
+      cache.set(cacheKey, { ts: now, ttl: defaultTtl, data: payload })
+      return payload
+    })
+
+    return result
+  },
+
   async getProductById(id: number) {
     const result = await sql`
       SELECT * FROM products 

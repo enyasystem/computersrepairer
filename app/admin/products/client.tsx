@@ -37,7 +37,7 @@ type DbProduct = {
   status: string
 }
 
-export default function AdminProductsClient({ products }: { products: DbProduct[] }) {
+export default function AdminProductsClient({ products, total, page, perPage }: { products: DbProduct[]; total?: number; page?: number; perPage?: number }) {
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState<string>("all")
   const [categoryFilter, setCategoryFilter] = useState<string>("all")
@@ -401,6 +401,16 @@ export default function AdminProductsClient({ products }: { products: DbProduct[
           </div>
         </CardContent>
       </Card>
+      {/* Pagination controls */}
+      {typeof total !== 'undefined' && (
+        <div className="flex items-center justify-between">
+          <div className="text-sm text-muted-foreground">Showing page {page} — {products.length} of {total} products</div>
+          <div className="flex items-center space-x-2">
+            <Link href={`?page=${Math.max(1, (page || 1) - 1)}&perPage=${perPage || 10}`} className="px-3 py-1 rounded border hover:bg-slate-50">Previous</Link>
+            <Link href={`?page=${(page || 1) + 1}&perPage=${perPage || 10}`} className="px-3 py-1 rounded border hover:bg-slate-50">Next</Link>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
