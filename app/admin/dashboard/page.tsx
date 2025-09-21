@@ -86,19 +86,21 @@ export default async function AdminDashboard() {
   function EmptyState({ title, description, cta }: { title: string; description?: string; cta?: { href: string; label: string } }) {
     return (
       <div className="py-8 text-center">
-        <div className="mx-auto w-40 h-28 opacity-80">
-          <svg viewBox="0 0 64 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
-            <rect x="2" y="10" width="60" height="28" rx="4" stroke="#CBD5E1" strokeWidth="2" fill="#F8FAFC" />
-            <circle cx="12" cy="24" r="4" fill="#E2E8F0" />
-            <rect x="20" y="18" width="36" height="2" rx="1" fill="#E2E8F0" />
-            <rect x="20" y="22" width="26" height="2" rx="1" fill="#E2E8F0" />
-          </svg>
+        <div className="mx-auto w-40 h-28 flex items-center justify-center">
+          <div className="w-20 h-20 rounded-lg bg-amber-100 flex items-center justify-center">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-10 h-10 text-amber-600">
+              <rect x="6" y="10" width="36" height="24" rx="3" stroke="currentColor" strokeWidth="1.5" fill="rgba(250, 204, 21, 0.08)" />
+              <path d="M14 18h20" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+              <path d="M14 22h14" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+              <circle cx="36" cy="18" r="2" fill="currentColor" />
+            </svg>
+          </div>
         </div>
         <h4 className="mt-4 text-lg font-medium">{title}</h4>
         {description && <p className="mt-2 text-sm text-muted-foreground">{description}</p>}
         {cta && (
           <div className="mt-4">
-            <Link href={cta.href} className="inline-flex items-center px-3 py-2 rounded bg-sky-600 text-white text-sm">{cta.label}</Link>
+            <Link href={cta.href} className="inline-flex items-center px-3 py-2 rounded-md bg-amber-400 text-black text-sm font-medium hover:bg-amber-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-300">{cta.label}</Link>
           </div>
         )}
       </div>
