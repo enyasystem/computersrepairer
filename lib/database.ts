@@ -110,26 +110,11 @@ export const db = {
   async getProducts() {
     return await withRetry(async () => {
       // Log current schema and search_path for debugging
-      try {
-        const ctx = await sql`SELECT current_schema() as current_schema, current_setting('search_path') as search_path`
-        console.log('[v0] getProducts session schema:', ctx[0])
-      } catch (e) {
-        // ignore
-      }
-
       const result = await sql`
         SELECT * FROM public.products 
         WHERE is_active = true
         ORDER BY category, name
       `
-      try {
-        console.log('[v0] getProducts returned rows:', Array.isArray(result) ? result.length : typeof result)
-        if (Array.isArray(result)) {
-          try {
-            console.log('[v0] getProducts sample names:', result.slice(0, 20).map((r: any) => ({ id: r.id, name: r.name })))
-          } catch (e) {}
-        }
-      } catch (e) {}
       return result
     })
   },

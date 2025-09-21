@@ -8,11 +8,6 @@ export default async function AdminDashboard() {
     const products = (await db.getProducts()) || []
     const posts = (await db.getBlogPosts("published")) || []
 
-  // Debug: log raw fetched values to server console
-  console.log('[admin/dashboard] rawAnalytics:', JSON.stringify(rawAnalytics))
-  console.log('[admin/dashboard] products count (raw):', Array.isArray(products) ? products.length : 'not-array')
-  console.log('[admin/dashboard] posts count (raw):', Array.isArray(posts) ? posts.length : 'not-array')
-
   // Ensure numeric values are numbers (Neon may return strings)
     const analytics = {
       totalCustomers: Number(rawAnalytics.totalCustomers) || 0,
