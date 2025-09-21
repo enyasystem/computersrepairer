@@ -170,13 +170,9 @@ export default function AdminProductsClient({ products, total, page, perPage }: 
   const handleHardDeleteProduct = async (productId: number) => {
     setDeleting(true)
     try {
-      const adminToken = typeof window !== 'undefined' ? localStorage.getItem('adminToken') : null
-      const headers: any = { 'Content-Type': 'application/json' }
-      if (adminToken) headers['x-admin-token'] = adminToken
-
       const res = await fetch('/api/admin/products/hard-delete', {
         method: 'POST',
-        headers,
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: productId }),
       })
       const data = await res.json()

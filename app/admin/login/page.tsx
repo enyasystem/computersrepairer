@@ -1,5 +1,54 @@
 "use client"
 
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+
+export default function AdminLoginPage() {
+  const router = useRouter()
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setError(null)
+    try {
+      const res = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      })
+      const j = await res.json()
+      if (j?.ok) {
+        router.push('/admin/products')
+      } else {
+        setError(j?.error || 'Login failed')
+      }
+    } catch (err) {
+      setError('Login failed')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className="max-w-sm mx-auto mt-24">
+      <h1 className="text-2xl font-bold mb-4">Admin Login</h1>
+      <form onSubmit={submit} className="space-y-3">
+        <Input placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} />
+        <Input placeholder="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+        {error && <div className="text-red-600">{error}</div>}
+        <Button type="submit" disabled={loading}>{loading ? 'Signing in...' : 'Sign in'}</Button>
+      </form>
+    </div>
+  )
+}
+"use client"
+
 import type React from "react"
 
 import { useState } from "react"
