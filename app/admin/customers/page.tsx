@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Search, MoreHorizontal, Phone, Mail, Calendar, DollarSign } from "lucide-react"
+import { formatCurrencyNGN } from "@/lib/format"
 
 /**
  * Admin Customers Page
@@ -102,7 +103,7 @@ export default function AdminCustomersPage() {
             <CardTitle className="text-sm font-medium">Avg. Lifetime Value</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">$1,245</div>
+            <div className="text-2xl font-bold">{formatCurrencyNGN(1245)}</div>
             <p className="text-xs text-muted-foreground">Per customer</p>
           </CardContent>
         </Card>
@@ -188,7 +189,7 @@ export default function AdminCustomersPage() {
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center font-medium">
-                      <DollarSign className="h-3 w-3 mr-1" />${customer.totalSpent.toLocaleString()}
+                      <DollarSign className="h-3 w-3 mr-1" />{formatCurrencyNGN(customer.totalSpent)}
                     </div>
                   </TableCell>
                   <TableCell>

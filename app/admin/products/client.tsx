@@ -16,6 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { productCategories, formatPrice, type Product } from "@/lib/products"
+import { formatCurrencyNGN } from "@/lib/format"
 import { Plus, Search, MoreHorizontal, Edit, Trash2, Eye, Package, AlertTriangle, CheckCircle } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
@@ -336,9 +337,9 @@ export default function AdminProductsClient({ products, total, page, perPage }: 
                       </TableCell>
                       <TableCell>
                         <div className="flex flex-col">
-                          <span className="font-medium">{formatPrice(Number(product.price))}</span>
+                          <span className="font-medium">{formatCurrencyNGN(Number(product.price))}</span>
                           {product.original_price && (
-                            <span className="text-sm text-muted-foreground line-through">{formatPrice(Number(product.original_price))}</span>
+                            <span className="text-sm text-muted-foreground line-through">{formatCurrencyNGN(Number(product.original_price))}</span>
                           )}
                         </div>
                       </TableCell>
@@ -384,7 +385,7 @@ export default function AdminProductsClient({ products, total, page, perPage }: 
                         <div>
                           <div className="font-medium truncate max-w-xs">{product.name}</div>
                           <div className="text-sm text-muted-foreground">{product.brand}</div>
-                          <div className="text-sm">{formatPrice(Number(product.price))}</div>
+                          <div className="text-sm">{formatCurrencyNGN(Number(product.price))}</div>
                         </div>
                       </div>
 

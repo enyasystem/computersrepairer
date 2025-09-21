@@ -40,6 +40,9 @@ export default function AdminAnalyticsPage() {
     { type: "support", description: "Network setup completed", time: "1 day ago" },
   ]
 
+  const formatCurrency = (value: number) =>
+    new Intl.NumberFormat("en-NG", { style: "currency", currency: "NGN", maximumFractionDigits: 0 }).format(value)
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -63,7 +66,7 @@ export default function AdminAnalyticsPage() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${revenueData.thisMonth.toLocaleString()}</div>
+            <div className="text-2xl font-bold">{formatCurrency(revenueData.thisMonth)}</div>
             <div className="flex items-center text-xs text-muted-foreground">
               <TrendingUp className="h-3 w-3 mr-1 text-green-500" />+{revenueData.growth}% from last month
             </div>
@@ -131,11 +134,11 @@ export default function AdminAnalyticsPage() {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <span className="text-sm">This Month</span>
-                    <span className="font-semibold">${revenueData.thisMonth.toLocaleString()}</span>
+                    <span className="font-semibold">{formatCurrency(revenueData.thisMonth)}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm">Last Month</span>
-                    <span className="font-semibold">${revenueData.lastMonth.toLocaleString()}</span>
+                    <span className="font-semibold">{formatCurrency(revenueData.lastMonth)}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm">Growth</span>
@@ -187,7 +190,7 @@ export default function AdminAnalyticsPage() {
                       <p className="text-sm text-muted-foreground">{service.count} completed this month</p>
                     </div>
                     <div className="text-right">
-                      <p className="font-semibold">${service.revenue.toLocaleString()}</p>
+                      <p className="font-semibold">{formatCurrency(service.revenue)}</p>
                       <p className="text-sm text-muted-foreground">Revenue</p>
                     </div>
                   </div>
