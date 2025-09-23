@@ -1,6 +1,6 @@
+"use client"
 import React from "react"
 import { useToast, toast } from '@/hooks/use-toast'
-"use client"
 
 import { useState, useRef, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
