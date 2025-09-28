@@ -22,6 +22,15 @@ export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
   const [isScrolled, setIsScrolled] = useState(false)
+  // mobile accordion state: sections start collapsed
+  const [mobileSectionsOpen, setMobileSectionsOpen] = useState<{ services: boolean; shop: boolean }>({
+    services: false,
+    shop: false,
+  })
+
+  const toggleMobileSection = (section: 'services' | 'shop') => {
+    setMobileSectionsOpen((prev) => ({ ...prev, [section]: !prev[section] }))
+  }
 
   useEffect(() => {
     const handleScroll = () => {
@@ -252,39 +261,65 @@ export function Header() {
             </Link>
 
             <div className="space-y-3">
-              <div className="font-semibold text-foreground py-2 border-b border-border/50">Services</div>
-              <div className="pl-4 space-y-3">
-                {servicesDropdown.map((item) => (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    className="flex items-center gap-3 py-2 text-sm text-muted-foreground hover:text-primary transition-colors"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    <item.icon className="h-4 w-4" />
-                    <div>
-                      <div className="font-medium">{item.name}</div>
-                      <div className="text-xs text-muted-foreground">{item.description}</div>
-                    </div>
-                  </Link>
-                ))}
+              <div>
+                <button
+                  type="button"
+                  onClick={() => toggleMobileSection('services')}
+                  aria-expanded={mobileSectionsOpen.services}
+                  className="flex items-center justify-between w-full font-semibold text-foreground py-2 border-b border-border/50"
+                >
+                  <span>Services</span>
+                  <ChevronDown className={`h-4 w-4 transition-transform ${mobileSectionsOpen.services ? 'rotate-180' : ''}`} />
+                </button>
+
+                {mobileSectionsOpen.services && (
+                  <div className="pl-4 space-y-3">
+                    {servicesDropdown.map((item) => (
+                      <Link
+                        key={item.name}
+                        href={item.href}
+                        className="flex items-center gap-3 py-2 text-sm text-muted-foreground hover:text-primary transition-colors"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        <item.icon className="h-4 w-4" />
+                        <div>
+                          <div className="font-medium">{item.name}</div>
+                          <div className="text-xs text-muted-foreground">{item.description}</div>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
 
             <div className="space-y-3">
-              <div className="font-semibold text-foreground py-2 border-b border-border/50">Shop</div>
-              <div className="pl-4 space-y-3">
-                {shopDropdown.map((item) => (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    className="block py-2 text-sm text-muted-foreground hover:text-primary transition-colors"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    <div className="font-medium">{item.name}</div>
-                    <div className="text-xs text-muted-foreground">{item.description}</div>
-                  </Link>
-                ))}
+              <div>
+                <button
+                  type="button"
+                  onClick={() => toggleMobileSection('shop')}
+                  aria-expanded={mobileSectionsOpen.shop}
+                  className="flex items-center justify-between w-full font-semibold text-foreground py-2 border-b border-border/50"
+                >
+                  <span>Shop</span>
+                  <ChevronDown className={`h-4 w-4 transition-transform ${mobileSectionsOpen.shop ? 'rotate-180' : ''}`} />
+                </button>
+
+                {mobileSectionsOpen.shop && (
+                  <div className="pl-4 space-y-3">
+                    {shopDropdown.map((item) => (
+                      <Link
+                        key={item.name}
+                        href={item.href}
+                        className="block py-2 text-sm text-muted-foreground hover:text-primary transition-colors"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        <div className="font-medium">{item.name}</div>
+                        <div className="text-xs text-muted-foreground">{item.description}</div>
+                      </Link>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
 
