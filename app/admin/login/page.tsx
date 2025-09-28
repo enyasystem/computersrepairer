@@ -72,14 +72,14 @@ export default function AdminLogin() {
 
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-foreground font-medium">
-                  Email Address
+                  Username or Email
                 </Label>
                 <Input
                   id="email"
-                  type="email"
+                  type="text"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@computersrepairer.com"
+                  placeholder="admin or admin@computersrepairer.com"
                   required
                   className="bg-input border-border focus:ring-ring"
                 />
@@ -125,7 +125,7 @@ export default function AdminLogin() {
             </form>
 
             <div className="mt-6 text-center">
-              <p className="text-sm text-muted-foreground">Demo credentials: admin@computersrepairer.com / admin123</p>
+              <p className="text-sm text-muted-foreground">Demo credentials: username: admin (or email: admin@computersrepairer.com) / password: admin123</p>
             </div>
           </CardContent>
         </Card>

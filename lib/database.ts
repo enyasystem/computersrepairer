@@ -35,7 +35,9 @@ if (process.env.DATABASE_PRIMARY_URL && process.env.DATABASE_PRIMARY_URL !== pro
 export const primarySql = neon(databaseUrl)
 
 // simple retry helper for transient network/DNS/fetch failures
-export async function withRetry<T>(fn: () => Promise<T>, retries = 5, baseDelay = 500) {
+const DEFAULT_DB_RETRIES = 8
+const DEFAULT_DB_BASE_DELAY = 800 // ms
+export async function withRetry<T>(fn: () => Promise<T>, retries = DEFAULT_DB_RETRIES, baseDelay = DEFAULT_DB_BASE_DELAY) {
   let attempt = 0
   while (true) {
     try {

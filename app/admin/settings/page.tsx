@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
 import { Save, Shield, Bell, Globe, Database } from "lucide-react"
+import { useRouter } from 'next/navigation'
 
 /**
  * Admin Settings Page
@@ -44,10 +45,41 @@ export default function AdminSettingsPage() {
     passwordExpiry: "90",
   })
 
+  const router = useRouter()
+  const [accountEmail, setAccountEmail] = useState('admin@computersrepairer.com')
+  const [currentPassword, setCurrentPassword] = useState('')
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+
   const handleSave = () => {
     // Mock save functionality
     console.log("[v0] Settings saved:", { businessInfo, notifications, security })
     try { toast({ title: 'Settings saved', description: 'Settings saved successfully!' }) } catch (e) {}
+  }
+
+  const handleAccountSave = async () => {
+    if (newPassword && newPassword !== confirmPassword) {
+      toast({ title: 'Password mismatch', description: 'New password and confirmation do not match', variant: 'destructive' })
+      return
+    }
+    try {
+      const payload: any = {}
+      if (accountEmail) payload.email = accountEmail
+      if (newPassword) payload.password = newPassword
+      const res = await fetch('/api/admin/settings/update', { method: 'POST', body: JSON.stringify(payload) })
+      const j = await res.json()
+      if (!res.ok) throw new Error(j?.error || 'Update failed')
+      toast({ title: 'Account updated', description: 'Account settings updated successfully' })
+      // clear password fields
+      setCurrentPassword('')
+      setNewPassword('')
+      setConfirmPassword('')
+      // optionally refresh
+      router.refresh()
+    } catch (e: any) {
+      console.error(e)
+      toast({ title: 'Update failed', description: String(e?.message || e), variant: 'destructive' })
+    }
   }
 
   return (
@@ -235,6 +267,30 @@ export default function AdminSettingsPage() {
                     value={security.passwordExpiry}
                     onChange={(e) => setSecurity({ ...security, passwordExpiry: e.target.value })}
                   />
+                </div>
+              </div>
+              <Separator />
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="accountEmail">Admin Email</Label>
+                  <Input id="accountEmail" type="email" value={accountEmail} onChange={(e) => setAccountEmail(e.target.value)} />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="currentPassword">Current Password</Label>
+                    <Input id="currentPassword" type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="newPassword">New Password</Label>
+                    <Input id="newPassword" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                  <Input id="confirmPassword" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
+                </div>
+                <div className="flex justify-end">
+                  <Button onClick={handleAccountSave} className="ml-auto">Update Account</Button>
                 </div>
               </div>
             </CardContent>
