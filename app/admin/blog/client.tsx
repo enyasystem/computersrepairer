@@ -42,6 +42,25 @@ export default function AdminBlogClient({ posts, total, page, perPage }: { posts
     setLocalPosts(posts || [])
   }, [posts])
 
+  // On mount, fetch live list from the admin API to ensure UI reflects DB state
+  useEffect(() => {
+    let mounted = true
+    ;(async () => {
+      try {
+        const res = await fetch(`/api/admin/blog/list?page=${page || 1}&perPage=${perPage || 10}`)
+        if (!res.ok) return
+        const j = await res.json()
+        if (!mounted) return
+        if (j && j.data && Array.isArray(j.data.rows)) {
+          setLocalPosts(j.data.rows)
+        }
+      } catch (err) {
+        console.warn('[v0][client] Failed to fetch live blog list', err)
+      }
+    })()
+    return () => { mounted = false }
+  }, [page, perPage])
+
   const handleDelete = async (postId: number) => {
     setDeleting(true)
     try {
@@ -121,6 +140,17 @@ export default function AdminBlogClient({ posts, total, page, perPage }: { posts
           </div>
         )}
       </div>
+
+      {/* Fetch live list on mount to avoid stale server-rendered flash */}
+      {/* This mirrors the products admin client: fetch bypassing cache and reading from primary */}
+      <>
+        {typeof window !== 'undefined' && (
+          (() => {
+            // useEffect cannot be called conditionally, so we attach a client-side effect above.
+            return null
+          })()
+        )}
+      </>
 
       {/* Confirm delete dialog */}
       <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
