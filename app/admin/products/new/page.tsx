@@ -297,7 +297,7 @@ export default function NewProductPage() {
                       step="0.01"
                       value={formData.price}
                       onChange={(e) => handleInputChange("price", e.target.value)}
-                      placeholder="0.00"
+                      placeholder="₦0.00"
                       className="mt-1"
                     />
                   </div>
@@ -310,7 +310,7 @@ export default function NewProductPage() {
                       step="0.01"
                       value={formData.originalPrice}
                       onChange={(e) => handleInputChange("originalPrice", e.target.value)}
-                      placeholder="0.00"
+                      placeholder="₦0.00"
                       className="mt-1"
                     />
                   </div>

@@ -25,8 +25,8 @@ export default function AdminSettingsPage() {
   const [businessInfo, setBusinessInfo] = useState({
     name: "Computer Repair & IT Support Centre",
     email: "info@computersrepairer.com",
-    phone: "+1 (555) 123-4567",
-    address: "123 Tech Street, Digital City, DC 12345",
+    phone: "+234 803 000 0000",
+    address: "12A Adeola Odeku Street, Victoria Island, Lagos 106104",
     description: "Professional computer repair and IT support services for businesses and individuals.",
   })
 

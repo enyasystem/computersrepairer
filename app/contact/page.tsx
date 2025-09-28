@@ -16,7 +16,7 @@ const contactInfo = [
   {
     icon: <Phone className="h-6 w-6" />,
     title: "Phone",
-    details: ["(555) 123-4567", "Emergency: (555) 123-4568"],
+    details: ["+234 803 000 0000", "Emergency: +234 803 000 0001"],
     description: "Call us for immediate assistance",
   },
   {
@@ -28,7 +28,7 @@ const contactInfo = [
   {
     icon: <MapPin className="h-6 w-6" />,
     title: "Location",
-    details: ["123 Tech Street", "Digital City, DC 12345"],
+    details: ["12A Adeola Odeku Street", "Victoria Island, Lagos 106104"],
     description: "Visit our repair center",
   },
   {
@@ -103,7 +103,7 @@ export default function ContactPage() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" className="px-8">
                 <Phone className="h-5 w-5 mr-2" />
-                Call Now: (555) 123-4567
+                Call Now: +234 803 000 0000
               </Button>
               <Button size="lg" variant="outline" className="px-8 bg-transparent">
                 <Calendar className="h-5 w-5 mr-2" />
@@ -184,7 +184,7 @@ export default function ContactPage() {
                       type="tel"
                       value={formData.phone}
                       onChange={(e) => handleInputChange("phone", e.target.value)}
-                      placeholder="(555) 123-4567"
+                      placeholder="+234 803 000 0000"
                     />
                   </div>
 
@@ -257,7 +257,7 @@ export default function ContactPage() {
                     <div className="text-center text-muted-foreground">
                       <MapPin className="h-12 w-12 mx-auto mb-2" />
                       <p>Interactive Map</p>
-                      <p className="text-sm">123 Tech Street, Digital City, DC 12345</p>
+                      <p className="text-sm">12A Adeola Odeku Street, Victoria Island, Lagos 106104</p>
                     </div>
                   </div>
                   <div className="space-y-4">
@@ -291,7 +291,7 @@ export default function ContactPage() {
                   </p>
                   <Button variant="destructive" size="lg" className="w-full">
                     <Phone className="h-5 w-5 mr-2" />
-                    Emergency: (555) 123-4568
+                    Emergency: +234 803 000 0001
                   </Button>
                 </CardContent>
               </Card>

@@ -27,10 +27,12 @@ try {
 
 // Create a SQL client using Neon
 export const sql = neon(databaseUrl)
-// Optionally allow a dedicated primary DB connection for strong-consistency reads.
-// Set `DATABASE_PRIMARY_URL` in your environment to a primary-only connection string (if provided).
-const primaryDatabaseUrl = process.env.DATABASE_PRIMARY_URL || process.env.DATABASE_URL
-export const primarySql = primaryDatabaseUrl ? neon(primaryDatabaseUrl) : sql
+// For local/dev consistency: force primarySql to use DATABASE_URL to ensure reads/writes go to the same DB.
+// NOTE: In production you may prefer to set DATABASE_PRIMARY_URL to a dedicated writer connection.
+if (process.env.DATABASE_PRIMARY_URL && process.env.DATABASE_PRIMARY_URL !== process.env.DATABASE_URL) {
+  try { console.warn('[v0] DATABASE_PRIMARY_URL is set but will be ignored in favor of DATABASE_URL for local consistency') } catch (e) {}
+}
+export const primarySql = neon(databaseUrl)
 
 // simple retry helper for transient network/DNS/fetch failures
 export async function withRetry<T>(fn: () => Promise<T>, retries = 5, baseDelay = 500) {
@@ -147,7 +149,8 @@ export const db = {
     // simple in-memory cache keyed by page/perPage/activeOnly
     const cacheKey = `products:page=${page}:perPage=${perPage}:active=${activeOnly}`
     const defaultTtl = 1000 * 30 // 30s
-    if (!opts?.bypassCache) {
+    // If caller requested `usePrimary` (strong-consistency) or bypassCache, skip cache entirely
+    if (!opts?.bypassCache && !opts?.usePrimary) {
       try {
         const cached = await cacheGet(cacheKey)
         if (cached) {

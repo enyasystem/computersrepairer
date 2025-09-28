@@ -42,7 +42,7 @@ export default async function AdminDashboard() {
   }
 
   try {
-    const pagedProducts = await db.getProductsPaged(1, 100, { activeOnly: true })
+    const pagedProducts = await db.getProductsPaged(1, 100, { activeOnly: true, bypassCache: true, usePrimary: true })
     products = pagedProducts.rows || []
     productsTotal = Number(pagedProducts.total || 0)
   } catch (err: any) {

@@ -27,8 +27,8 @@ Key Features:
 Whether you're gaming, streaming, or creating content, this laptop delivers the performance you need. The advanced cooling system ensures optimal temperatures during intense gaming sessions, while the high-refresh display provides smooth, tear-free visuals.
 
 Perfect for gamers, content creators, and professionals who demand the best performance from their mobile workstation.`,
-    price: "$1,299.99",
-    originalPrice: "$1,499.99",
+    price: "₦1,299.99",
+    originalPrice: "₦1,499.99",
     rating: 4.8,
     image: "/gaming-laptop-asus.jpg",
     badge: "Best Seller",
@@ -61,7 +61,7 @@ Key Features:
 The MX Master 3S offers unparalleled precision and comfort for extended use. Switch seamlessly between multiple devices, customize buttons for your workflow, and enjoy the ultra-fast, ultra-quiet scroll wheel.
 
 Compatible with Windows, macOS, Linux, iPadOS, and Chrome OS. Includes Logitech Options+ software for advanced customization.`,
-    price: "$99.99",
+    price: "₦99.99",
     originalPrice: null,
     rating: 4.9,
     image: "/wireless-mouse-logitech.jpg",
@@ -84,19 +84,19 @@ const recentProducts = [
   {
     id: "mechanical-keyboard-corsair",
     name: "Corsair K95 RGB Platinum",
-    price: "$159.99",
+    price: "₦159.99",
     image: "/mechanical-keyboard-corsair.jpg",
   },
   {
     id: "external-ssd-samsung",
     name: "Samsung T7 Portable SSD 1TB",
-    price: "$89.99",
+    price: "₦89.99",
     image: "/external-ssd-samsung.jpg",
   },
   {
     id: "webcam-logitech-c920",
     name: "Logitech C920 HD Pro Webcam",
-    price: "$69.99",
+    price: "₦69.99",
     image: "/webcam-logitech.jpg",
   },
 ]

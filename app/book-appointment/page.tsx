@@ -124,7 +124,8 @@ export default function BookAppointmentPage() {
                       <span className="font-medium">Email:</span> info@techrepair.com
                     </p>
                     <p className="text-sm">
-                      <span className="font-medium">Address:</span> 123 Tech Street, Digital City, DC 12345
+                      <span className="font-medium">Address:</span> 12A Adeola Odeku Street, Victoria Island, Lagos
+                      106104
                     </p>
                   </CardContent>
                 </Card>
