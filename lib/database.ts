@@ -416,6 +416,14 @@ export const db = {
     return result[0]
   },
 
+  async getBlogPostById(id: number) {
+    const result = await sql`
+      SELECT * FROM blog_posts 
+      WHERE id = ${id}
+    `
+    return result[0]
+  },
+
   async createBlogPost(post: {
     title: string
     slug: string
@@ -449,6 +457,52 @@ export const db = {
       } catch (logErr) {
         console.error('[v0] Failed to log SQL error details', logErr)
       }
+      throw error
+    }
+  },
+
+  async updateBlogPost(id: number, post: {
+    title?: string
+    slug?: string
+    content?: string
+    excerpt?: string
+    featured_image?: string
+    status?: string
+    author_name?: string
+    published_at?: string | null
+  }) {
+    try {
+      const result = await sql`
+        UPDATE blog_posts SET
+          title = COALESCE(${post.title}, title),
+          slug = COALESCE(${post.slug}, slug),
+          content = COALESCE(${post.content}, content),
+          excerpt = COALESCE(${post.excerpt}, excerpt),
+          featured_image = COALESCE(${post.featured_image}, featured_image),
+          status = COALESCE(${post.status}, status),
+          author_name = COALESCE(${post.author_name}, author_name),
+          published_at = COALESCE(${post.published_at}, published_at),
+          updated_at = NOW()
+        WHERE id = ${id}
+        RETURNING *
+      `
+      return result[0]
+    } catch (error) {
+      const err: any = error
+      try { console.error('[v0] SQL error updating blog post:', { message: err?.message, stack: err?.stack }) } catch (logErr) {}
+      throw error
+    }
+  },
+
+  async deleteBlogPost(id: number) {
+    try {
+      const result = await sql`
+        DELETE FROM blog_posts WHERE id = ${id} RETURNING *
+      `
+      return result[0]
+    } catch (error) {
+      const err: any = error
+      try { console.error('[v0] SQL error deleting blog post:', { message: err?.message, stack: err?.stack }) } catch (logErr) {}
       throw error
     }
   },

@@ -5,83 +5,18 @@ import { Badge } from "@/components/ui/badge"
 import { Calendar, Clock, ArrowRight } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
+import { db } from "@/lib/database"
 
 export const metadata: Metadata = {
   title: "Blog - Computer Repair & IT Support Centre",
   description: "Latest tech tips, computer repair guides, and IT support insights from our experts.",
 }
 
-// Mock blog data - in a real app, this would come from a CMS or database
-const blogPosts = [
-  {
-    slug: "common-computer-problems-solutions",
-    title: "Top 10 Common Computer Problems and Their Solutions",
-    excerpt: "Learn how to troubleshoot the most frequent computer issues that affect both home and business users.",
-    content: "Full article content would go here...",
-    date: "2024-01-15",
-    readTime: "8 min read",
-    image: "/computer-troubleshooting-guide.jpg",
-    category: "Troubleshooting",
-    author: "Tech Support Team",
-  },
-  {
-    slug: "network-security-best-practices",
-    title: "Network Security Best Practices for Small Businesses",
-    excerpt: "Protect your business network from cyber threats with these essential security measures and protocols.",
-    content: "Full article content would go here...",
-    date: "2024-01-12",
-    readTime: "12 min read",
-    image: "/network-security-firewall.jpg",
-    category: "Security",
-    author: "IT Security Team",
-  },
-  {
-    slug: "ssd-vs-hdd-upgrade-guide",
-    title: "SSD vs HDD: Complete Upgrade Guide for 2024",
-    excerpt: "Discover the benefits of upgrading to an SSD and learn how to migrate your data safely.",
-    content: "Full article content would go here...",
-    date: "2024-01-10",
-    readTime: "6 min read",
-    image: "/ssd-hard-drive-upgrade.jpg",
-    category: "Hardware",
-    author: "Hardware Specialists",
-  },
-  {
-    slug: "windows-11-optimization-tips",
-    title: "Windows 11 Optimization: Speed Up Your PC",
-    excerpt: "Simple tweaks and settings to make your Windows 11 computer run faster and more efficiently.",
-    content: "Full article content would go here...",
-    date: "2024-01-08",
-    readTime: "10 min read",
-    image: "/windows-11-optimization-settings.jpg",
-    category: "Software",
-    author: "Software Team",
-  },
-  {
-    slug: "data-backup-strategies",
-    title: "Essential Data Backup Strategies for Businesses",
-    excerpt: "Protect your valuable business data with proven backup strategies and disaster recovery plans.",
-    content: "Full article content would go here...",
-    date: "2024-01-05",
-    readTime: "15 min read",
-    image: "/data-backup-cloud-storage.jpg",
-    category: "Data Management",
-    author: "Data Recovery Team",
-  },
-  {
-    slug: "laptop-maintenance-guide",
-    title: "Laptop Maintenance: Keep Your Device Running Smoothly",
-    excerpt: "Regular maintenance tips to extend your laptop's lifespan and prevent common hardware failures.",
-    content: "Full article content would go here...",
-    date: "2024-01-03",
-    readTime: "7 min read",
-    image: "/laptop-cleaning-maintenance.jpg",
-    category: "Maintenance",
-    author: "Repair Technicians",
-  },
-]
+export default async function BlogPage() {
+  // Fetch published posts from the database (server-side)
+  const paged = await db.getBlogPostsPaged(1, 12, 'published')
+  const posts = Array.isArray(paged?.rows) ? paged.rows : []
 
-export default function BlogPage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -99,11 +34,11 @@ export default function BlogPage() {
       {/* Blog Grid */}
       <div className="container mx-auto px-4 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {blogPosts.map((post) => (
+          {posts.map((post: any) => (
             <Card key={post.slug} className="group hover:shadow-lg transition-all duration-300 border-border/50">
               <div className="relative overflow-hidden rounded-t-lg">
                 <Image
-                  src={post.image || "/placeholder.svg"}
+                  src={post.featured_image || post.image || "/placeholder.svg"}
                   alt={post.title}
                   width={500}
                   height={300}
@@ -124,7 +59,7 @@ export default function BlogPage() {
                 <div className="flex items-center gap-4 text-sm text-muted-foreground">
                   <div className="flex items-center gap-1">
                     <Calendar className="w-4 h-4" />
-                    {new Date(post.date).toLocaleDateString("en-US", {
+                    {new Date(post.published_at || post.date || post.created_at).toLocaleDateString("en-US", {
                       month: "short",
                       day: "numeric",
                       year: "numeric",
@@ -132,7 +67,7 @@ export default function BlogPage() {
                   </div>
                   <div className="flex items-center gap-1">
                     <Clock className="w-4 h-4" />
-                    {post.readTime}
+                    {post.read_time || post.readTime || post.read_time_min || '—'}
                   </div>
                 </div>
 
