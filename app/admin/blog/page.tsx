@@ -13,7 +13,7 @@ export default async function AdminBlogPage({ searchParams }: { searchParams?: {
 	const page = Number(searchParams?.page || '1') || 1
 	const perPage = Number(searchParams?.perPage || '10') || 10
 
-	const paged = await db.getBlogPostsPaged(page, perPage, 'published')
+	const paged = await db.getBlogPostsPaged(page, perPage, 'published', { bypassCache: true, usePrimary: true })
 
 	return <AdminBlogClient posts={paged.rows as any} total={paged.total} page={paged.page} perPage={paged.perPage} />
 }

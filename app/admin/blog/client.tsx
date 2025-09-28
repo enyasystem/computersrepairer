@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { format } from 'date-fns'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useToast } from '@/hooks/use-toast'
 import {
@@ -36,6 +36,11 @@ export default function AdminBlogClient({ posts, total, page, perPage }: { posts
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [deletingPost, setDeletingPost] = useState<any | null>(null)
   const [deleting, setDeleting] = useState(false)
+
+  // Keep localPosts in sync when server-side `posts` prop changes (e.g. after router.refresh())
+  useEffect(() => {
+    setLocalPosts(posts || [])
+  }, [posts])
 
   const handleDelete = async (postId: number) => {
     setDeleting(true)

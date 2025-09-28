@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { primarySql } from '@/lib/database'
 import { requireAdmin } from '@/lib/serverAuth'
+import { revalidatePath } from 'next/cache'
 
 export async function POST(request: Request) {
   const auth = requireAdmin(request)
@@ -27,6 +28,9 @@ export async function POST(request: Request) {
       } catch (e) {
         console.warn('[v0] Failed to clear global __blogPageCache', e)
       }
+
+      // Revalidate the admin blog page so the server-rendered list updates immediately
+      try { revalidatePath('/admin/blog') } catch (e) { console.warn('[v0] revalidatePath failed', e) }
 
       return NextResponse.json({ ok: true, deletedId: deleted.id })
     } catch (err) {

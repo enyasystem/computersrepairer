@@ -365,48 +365,53 @@ export const db = {
    * @param perPage items per page
    * @param status optional status filter (e.g. 'published')
    */
-  async getBlogPostsPaged(page = 1, perPage = 10, status?: string) {
-    const offset = (page - 1) * perPage
+  async getBlogPostsPaged(page = 1, perPage = 10, status?: string, opts?: { bypassCache?: boolean; usePrimary?: boolean }) {
+     const offset = (page - 1) * perPage
 
-    const cacheKey = `blog:page=${page}:perPage=${perPage}:status=${status || 'all'}`
-    ;(global as any).__blogPageCache = (global as any).__blogPageCache || new Map()
-    const cache: Map<string, { ts: number; ttl: number; data: any } > = (global as any).__blogPageCache
-    const cached = cache.get(cacheKey)
-    const now = Date.now()
-    const defaultTtl = 1000 * 30 // 30s
-    if (cached && now - cached.ts < (cached.ttl || defaultTtl)) {
-      return cached.data
-    }
+     const cacheKey = `blog:page=${page}:perPage=${perPage}:status=${status || 'all'}`
+     ;(global as any).__blogPageCache = (global as any).__blogPageCache || new Map()
+     const cache: Map<string, { ts: number; ttl: number; data: any } > = (global as any).__blogPageCache
+     const cached = cache.get(cacheKey)
+     const now = Date.now()
+     const defaultTtl = 1000 * 30 // 30s
+    // If caller requested bypassCache or usePrimary (strong-consistency), skip returning cached value
+     if (!opts?.bypassCache && !opts?.usePrimary && cached && now - cached.ts < (cached.ttl || defaultTtl)) {
+       return cached.data
+     }
 
-    const listQuery = status
-      ? sql`
-          SELECT * FROM blog_posts
-          WHERE status = ${status}
-          ORDER BY created_at DESC
-          LIMIT ${perPage}
-          OFFSET ${offset}
-        `
-      : sql`
-          SELECT * FROM blog_posts
-          ORDER BY created_at DESC
-          LIMIT ${perPage}
-          OFFSET ${offset}
-        `
+     const client = opts?.usePrimary ? primarySql : sql
 
-    const countQuery = status
-      ? sql`SELECT COUNT(*) as count FROM blog_posts WHERE status = ${status}`
-      : sql`SELECT COUNT(*) as count FROM blog_posts`
+     const listQuery = status
+       ? client`
+           SELECT * FROM blog_posts
+           WHERE status = ${status}
+           ORDER BY created_at DESC
+           LIMIT ${perPage}
+           OFFSET ${offset}
+         `
+       : client`
+           SELECT * FROM blog_posts
+           ORDER BY created_at DESC
+           LIMIT ${perPage}
+           OFFSET ${offset}
+         `
 
-    const result = await withRetry(async () => {
-      const [rows, countRes] = await Promise.all([listQuery, countQuery])
-      const total = Number(countRes[0].count || 0)
-      const payload = { rows, total, page, perPage }
-      cache.set(cacheKey, { ts: now, ttl: defaultTtl, data: payload })
-      return payload
-    })
+     const countQuery = status
+       ? client`SELECT COUNT(*) as count FROM blog_posts WHERE status = ${status}`
+       : client`SELECT COUNT(*) as count FROM blog_posts`
 
-    return result
-  },
+     const result = await withRetry(async () => {
+       const [rows, countRes] = await Promise.all([listQuery, countQuery])
+       const total = Number(countRes[0].count || 0)
+       const payload = { rows, total, page, perPage }
+       if (!opts?.bypassCache) {
+         cache.set(cacheKey, { ts: now, ttl: defaultTtl, data: payload })
+       }
+       return payload
+     })
+
+     return result
+   },
 
   async getBlogPostBySlug(slug: string) {
     const result = await sql`
