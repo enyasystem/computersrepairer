@@ -17,6 +17,7 @@ import { ArrowLeft, Save, Eye, Upload, Plus, X } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import { createProduct } from "../actions"
+import { useToast } from '@/hooks/use-toast'
 
 /**
  * Create New Product Page
@@ -27,6 +28,7 @@ import { createProduct } from "../actions"
  * @returns {JSX.Element} The new product creation interface
  */
 export default function NewProductPage() {
+  const { toast } = useToast()
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [specifications, setSpecifications] = useState<Array<{ key: string; value: string }>>([{ key: "", value: "" }])
@@ -137,6 +139,7 @@ export default function NewProductPage() {
       // Call server action
       try {
         await createProduct(formDataForServer)
+        try { toast({ title: 'Saved', description: 'Product created' }) } catch (e) {}
       } catch (err: any) {
         console.error('[v0] Server action error:', {
           message: err?.message,
@@ -144,6 +147,7 @@ export default function NewProductPage() {
           stack: err?.stack,
           serverError: err?.cause || err?.sourceError || null,
         })
+        try { toast({ title: 'Save failed', description: String(err?.message || err), variant: 'destructive' }) } catch (e) {}
         throw err
       }
     } catch (error) {

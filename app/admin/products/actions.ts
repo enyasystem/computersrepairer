@@ -44,20 +44,23 @@ export async function createProduct(formData: FormData) {
 
     // Upload image to Supabase Storage if provided
     let imageUrl: string | undefined
-    if (imageFile && supabaseServer) {
-      try {
-        const bucket = process.env.SUPABASE_BUCKET || 'public'
-        const fileName = `${Date.now()}-${imageFile.name}`
-        const path = `products/${fileName}`
-        const { data, error } = await supabaseServer.storage
-          .from(bucket)
-          .upload(path, imageFile, { cacheControl: '3600', upsert: false })
-        if (error) throw error
-        const publicRes = supabaseServer.storage.from(bucket).getPublicUrl(path)
-        imageUrl = publicRes?.data?.publicUrl || undefined
-      } catch (e) {
-        console.warn('[v0] Supabase upload failed', e)
+    if (imageFile) {
+      if (!supabaseServer) {
+        throw new Error('Supabase storage client not configured (missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY)')
       }
+
+      const bucket = process.env.SUPABASE_BUCKET || 'public'
+      const fileName = `${Date.now()}-${imageFile.name}`
+      const path = `products/${fileName}`
+      const { data, error } = await supabaseServer.storage
+        .from(bucket)
+        .upload(path, imageFile, { cacheControl: '3600', upsert: false })
+      if (error) {
+        console.error('[v0] Supabase upload for product image failed', error)
+        throw new Error('Supabase upload failed: ' + (error?.message || JSON.stringify(error)))
+      }
+      const publicRes = supabaseServer.storage.from(bucket).getPublicUrl(path)
+      imageUrl = publicRes?.data?.publicUrl || undefined
     }
 
     // Create product in database
@@ -141,20 +144,23 @@ export async function updateProduct(formData: FormData) {
 
     // Upload image to Supabase Storage if provided
     let imageUrl: string | undefined
-    if (imageFile && supabaseServer) {
-      try {
-        const bucket = process.env.SUPABASE_BUCKET || 'public'
-        const fileName = `${Date.now()}-${imageFile.name}`
-        const path = `products/${fileName}`
-        const { data, error } = await supabaseServer.storage
-          .from(bucket)
-          .upload(path, imageFile, { cacheControl: '3600', upsert: false })
-        if (error) throw error
-        const publicRes = supabaseServer.storage.from(bucket).getPublicUrl(path)
-        imageUrl = publicRes?.data?.publicUrl || undefined
-      } catch (e) {
-        console.warn('[v0] Supabase upload failed', e)
+    if (imageFile) {
+      if (!supabaseServer) {
+        throw new Error('Supabase storage client not configured (missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY)')
       }
+
+      const bucket = process.env.SUPABASE_BUCKET || 'public'
+      const fileName = `${Date.now()}-${imageFile.name}`
+      const path = `products/${fileName}`
+      const { data, error } = await supabaseServer.storage
+        .from(bucket)
+        .upload(path, imageFile, { cacheControl: '3600', upsert: false })
+      if (error) {
+        console.error('[v0] Supabase upload for product image failed', error)
+        throw new Error('Supabase upload failed: ' + (error?.message || JSON.stringify(error)))
+      }
+      const publicRes = supabaseServer.storage.from(bucket).getPublicUrl(path)
+      imageUrl = publicRes?.data?.publicUrl || undefined
     }
 
     const updated = await db.updateProduct(id, {

@@ -15,6 +15,7 @@ import { blogCategories, generateSlug, calculateReadTime, type BlogPost } from "
 import { ArrowLeft, Save, Eye, Upload } from "lucide-react"
 import Link from "next/link"
 import { createBlogPost } from "../actions"
+import { useToast } from '@/hooks/use-toast'
 
 /**
  * Create New Blog Post Page
@@ -25,6 +26,7 @@ import { createBlogPost } from "../actions"
  * @returns {JSX.Element} The new blog post creation interface
  */
 export default function NewBlogPostPage() {
+  const { toast } = useToast()
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
@@ -68,9 +70,11 @@ export default function NewBlogPostPage() {
       // Call server action which will persist and revalidate
       try {
         await createBlogPost(form)
+        try { toast({ title: 'Saved', description: 'Post created' }) } catch (e) {}
       } catch (err: any) {
         // server action may redirect internally; if it throws other errors, surface them
         console.error('[v0] createBlogPost server action error', err)
+        try { toast({ title: 'Save failed', description: String(err?.message || err), variant: 'destructive' }) } catch (e) {}
         throw err
       }
 

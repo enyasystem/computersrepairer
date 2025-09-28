@@ -66,10 +66,10 @@ export default function EditBlogPostPage({ params }: { params: { id: string } })
       if (featuredImageFile) form.append('featuredImageFile', featuredImageFile)
 
       await updateBlogPost(form)
-      toast({ title: 'Saved', description: 'Post updated' })
+      try { toast({ title: 'Saved', description: 'Post updated' }) } catch (e) {}
     } catch (err) {
       console.error(err)
-      toast({ title: 'Save failed', description: 'Could not update post', variant: 'destructive' })
+      try { toast({ title: 'Save failed', description: String((err as any)?.message || String(err)), variant: 'destructive' }) } catch (e) {}
     } finally {
       setIsLoading(false)
     }
