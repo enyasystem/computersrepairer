@@ -61,10 +61,7 @@ export default async function ShopPage() {
 			<div className="container mx-auto px-4 py-16">
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 					{products.map((product: any) => (
-						<Card
-							key={product.id}
-							className="group hover:shadow-lg transition-shadow duration-300"
-						>
+						<Card key={product.id} className="group hover:shadow-lg transition-shadow duration-300 flex flex-col h-full">
 							<CardHeader className="p-0">
 								<div className="relative aspect-square overflow-hidden rounded-t-lg">
 									<Image
@@ -88,7 +85,7 @@ export default async function ShopPage() {
 									)}
 								</div>
 							</CardHeader>
-							<CardContent className="p-6">
+							<CardContent className="p-6 flex-1 flex flex-col">
 								<h3 className="font-semibold text-lg mb-2 text-balance">
 									{product.name}
 								</h3>
@@ -107,14 +104,11 @@ export default async function ShopPage() {
 									)}
 								</div>
 							</CardContent>
-							<CardFooter className="p-6 pt-0">
-								<Link
-									href={`/shop/${product.id}`}
-									className="w-full"
-								>
+							<div className="p-6 pt-0 mt-auto">
+								<Link href={`/shop/${product.id}`} className="w-full">
 									<Button className="w-full">View More</Button>
 								</Link>
-							</CardFooter>
+							</div>
 						</Card>
 					))}
 				</div>

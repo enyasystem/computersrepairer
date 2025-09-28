@@ -29,7 +29,7 @@ export async function ShopSection() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {products.map((product: any, index: number) => (
-            <Card key={product.id || index} className="overflow-hidden hover:shadow-lg transition-shadow">
+            <Card key={product.id || index} className="overflow-hidden hover:shadow-lg transition-shadow flex flex-col h-full">
               <div className="relative">
                 <div className="aspect-square bg-muted">
                   <Image
@@ -61,19 +61,21 @@ export async function ShopSection() {
                 <CardTitle className="text-lg text-balance">{product.name}</CardTitle>
                 <CardDescription className="text-pretty">{product.description}</CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="flex-1 flex flex-col">
                 <div className="flex items-center gap-2 mb-4">
                   <span className="text-2xl font-bold text-primary">{renderPrice(product.price)}</span>
                   {product.original_price && (
                     <span className="text-lg text-muted-foreground line-through">{renderPrice(product.original_price)}</span>
                   )}
                 </div>
-                <Link href={`/shop/${product.id}`} className="w-full">
-                  <Button className="w-full">
-                    <ShoppingCart className="mr-2 h-4 w-4" />
-                    View Product
-                  </Button>
-                </Link>
+                <div className="mt-auto w-full">
+                  <Link href={`/shop/${product.id}`} className="w-full">
+                    <Button className="w-full">
+                      <ShoppingCart className="mr-2 h-4 w-4" />
+                      View Product
+                    </Button>
+                  </Link>
+                </div>
               </CardContent>
             </Card>
           ))}
