@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useToast, toast } from '@/hooks/use-toast'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from '@/components/ui/dialog'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -50,6 +51,9 @@ export default function AdminSettingsPage() {
   const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [isSavingAccount, setIsSavingAccount] = useState(false)
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false)
+  const [successMessage, setSuccessMessage] = useState('')
 
   const handleSave = () => {
     // Mock save functionality
@@ -62,23 +66,38 @@ export default function AdminSettingsPage() {
       toast({ title: 'Password mismatch', description: 'New password and confirmation do not match', variant: 'destructive' })
       return
     }
+    setIsSavingAccount(true)
     try {
       const payload: any = {}
       if (accountEmail) payload.email = accountEmail
       if (newPassword) payload.password = newPassword
-      const res = await fetch('/api/admin/settings/update', { method: 'POST', body: JSON.stringify(payload) })
+      const res = await fetch('/api/admin/settings/update', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+      console.log('[v0] settings update response status=', res.status)
       const j = await res.json()
+      console.log('[v0] settings update response json=', j)
       if (!res.ok) throw new Error(j?.error || 'Update failed')
+      // Show success toast and clear sensitive fields
       toast({ title: 'Account updated', description: 'Account settings updated successfully' })
-      // clear password fields
       setCurrentPassword('')
       setNewPassword('')
       setConfirmPassword('')
-      // optionally refresh
-      router.refresh()
+      // show modal dialog for clear visibility
+      setSuccessMessage('Your account credentials were updated successfully.')
+      setShowSuccessDialog(true)
+      // ensure toast is visible before refreshing the page
+      await new Promise((r) => setTimeout(r, 300))
+      // Refresh server state (me endpoint / session) and UI
+      try { router.refresh() } catch (e) {}
     } catch (e: any) {
       console.error(e)
       toast({ title: 'Update failed', description: String(e?.message || e), variant: 'destructive' })
+    } finally {
+      setIsSavingAccount(false)
     }
   }
 
@@ -290,7 +309,9 @@ export default function AdminSettingsPage() {
                   <Input id="confirmPassword" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
                 </div>
                 <div className="flex justify-end">
-                  <Button onClick={handleAccountSave} className="ml-auto">Update Account</Button>
+                  <Button onClick={handleAccountSave} className="ml-auto" disabled={isSavingAccount}>
+                    {isSavingAccount ? 'Updating...' : 'Update Account'}
+                  </Button>
                 </div>
               </div>
             </CardContent>
@@ -331,6 +352,24 @@ export default function AdminSettingsPage() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Success modal dialog */}
+      <Dialog open={showSuccessDialog} onOpenChange={(open) => {
+        setShowSuccessDialog(open)
+        if (!open) {
+          try { router.refresh() } catch (e) {}
+        }
+      }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Account Updated</DialogTitle>
+            <DialogDescription>{successMessage}</DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button onClick={() => setShowSuccessDialog(false)}>Close</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
