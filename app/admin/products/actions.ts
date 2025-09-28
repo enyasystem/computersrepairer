@@ -61,8 +61,17 @@ export async function createProduct(formData: FormData) {
 
     console.log("[v0] Product created successfully, redirecting...")
 
-    // Revalidate the products page to show the new product
+    // Revalidate the products page to show the new product in admin
     revalidatePath("/admin/products")
+
+    // Revalidate public-facing shop pages so the new product appears immediately
+    try {
+      revalidatePath('/')
+      revalidatePath('/shop')
+      if (product?.id) revalidatePath(`/shop/${product.id}`)
+    } catch (e) {
+      console.warn('[v0] revalidate public shop paths failed', e)
+    }
 
     // Redirect to products page
     redirect("/admin/products")
@@ -92,6 +101,9 @@ export async function updateProduct(formData: FormData) {
   try {
     const id = Number(formData.get('id') as string)
     if (!id) throw new Error('Missing product id')
+
+    // Fetch existing product to detect any id/slug references (here we use id)
+    const existing = await db.getProductById(id)
 
     const name = formData.get('name') as string
     const description = formData.get('description') as string
@@ -125,7 +137,19 @@ export async function updateProduct(formData: FormData) {
       specifications,
     })
 
+    // Revalidate admin listing
     revalidatePath('/admin/products')
+
+    // Revalidate public-facing shop pages
+    try {
+      revalidatePath('/')
+      revalidatePath('/shop')
+      if (existing?.id) revalidatePath(`/shop/${existing.id}`)
+      if (updated?.id) revalidatePath(`/shop/${updated.id}`)
+    } catch (e) {
+      console.warn('[v0] revalidate public shop paths failed', e)
+    }
+
     redirect('/admin/products')
   } catch (err) {
     const e: any = err

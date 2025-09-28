@@ -17,7 +17,7 @@ export async function createBlogPost(formData: FormData) {
 
     if (!title || !slug || !content) throw new Error('Missing required fields')
 
-    await db.createBlogPost({
+    const created = await db.createBlogPost({
       title,
       slug,
       content,
@@ -28,7 +28,18 @@ export async function createBlogPost(formData: FormData) {
       published_at: published_at || null,
     })
 
+    // Revalidate admin listing
     revalidatePath('/admin/blog')
+
+    // Revalidate public-facing pages so updates show up immediately
+    try {
+      revalidatePath('/')
+      revalidatePath('/blog')
+      if (created?.slug) revalidatePath(`/blog/${created.slug}`)
+    } catch (e) {
+      console.warn('[v0] revalidate public blog paths failed', e)
+    }
+
     redirect('/admin/blog')
   } catch (err) {
     const e: any = err
@@ -46,6 +57,10 @@ export async function updateBlogPost(formData: FormData) {
     const id = Number(formData.get('id') as string)
     if (!id) throw new Error('Missing id')
 
+    // Fetch existing post to detect old slug for revalidation
+    const existing = await db.getBlogPostById(id)
+    const oldSlug = existing?.slug
+
     const title = formData.get('title') as string
     const slug = formData.get('slug') as string
     const content = formData.get('content') as string
@@ -55,7 +70,7 @@ export async function updateBlogPost(formData: FormData) {
     const author_name = formData.get('author_name') as string
     const published_at = formData.get('published_at') as string
 
-    await db.updateBlogPost(id, {
+    const updated = await db.updateBlogPost(id, {
       title,
       slug,
       content,
@@ -66,7 +81,19 @@ export async function updateBlogPost(formData: FormData) {
       published_at: published_at || null,
     })
 
+    // Revalidate admin listing
     revalidatePath('/admin/blog')
+
+    // Revalidate public-facing pages (homepage, blog list, old slug & new slug)
+    try {
+      revalidatePath('/')
+      revalidatePath('/blog')
+      if (oldSlug) revalidatePath(`/blog/${oldSlug}`)
+      if (updated?.slug) revalidatePath(`/blog/${updated.slug}`)
+    } catch (e) {
+      console.warn('[v0] revalidate public blog paths failed', e)
+    }
+
     redirect('/admin/blog')
   } catch (err) {
     const e: any = err
@@ -81,8 +108,19 @@ export async function updateBlogPost(formData: FormData) {
 
 export async function deleteBlogPost(id: number) {
   try {
-    await db.deleteBlogPost(id)
+    const deleted = await db.deleteBlogPost(id)
+
+    // Revalidate admin listing
     revalidatePath('/admin/blog')
+
+    // Revalidate public-facing pages
+    try {
+      revalidatePath('/')
+      revalidatePath('/blog')
+      if (deleted?.slug) revalidatePath(`/blog/${deleted.slug}`)
+    } catch (e) {
+      console.warn('[v0] revalidate public blog paths failed', e)
+    }
   } catch (err) {
     console.error('[v0] deleteBlogPost error', err)
     throw err
