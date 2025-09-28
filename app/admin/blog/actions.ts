@@ -1,6 +1,7 @@
 "use server"
 
 import { db } from "@/lib/database"
+import { supabaseServer } from '@/lib/supabase'
 import { redirect } from "next/navigation"
 import { revalidatePath } from "next/cache"
 
@@ -10,12 +11,33 @@ export async function createBlogPost(formData: FormData) {
     const slug = formData.get('slug') as string
     const content = formData.get('content') as string
     const excerpt = formData.get('excerpt') as string
-    const featured_image = formData.get('featured_image') as string
+    let featured_image = formData.get('featured_image') as string
+    const featuredImageFile = formData.get('featuredImageFile') as File | null
     const status = formData.get('status') as string
     const author_name = formData.get('author_name') as string
     const published_at = formData.get('published_at') as string
 
     if (!title || !slug || !content) throw new Error('Missing required fields')
+
+    // Upload featured image if a file was provided
+    if (featuredImageFile) {
+      if (!supabaseServer) {
+        throw new Error('Supabase storage client not configured (missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY)')
+      }
+
+      const bucket = process.env.SUPABASE_BUCKET || 'public'
+      const fileName = `blog-${Date.now()}-${featuredImageFile.name}`
+      const path = `blog/${fileName}`
+      const { data, error } = await supabaseServer.storage
+        .from(bucket)
+        .upload(path, featuredImageFile, { cacheControl: '3600', upsert: false })
+      if (error) {
+        console.error('[v0] Supabase upload for blog featured image failed', error)
+        throw new Error('Supabase upload failed: ' + (error?.message || JSON.stringify(error)))
+      }
+      const publicRes = supabaseServer.storage.from(bucket).getPublicUrl(path)
+      featured_image = publicRes?.data?.publicUrl || featured_image
+    }
 
     const created = await db.createBlogPost({
       title,
@@ -65,10 +87,31 @@ export async function updateBlogPost(formData: FormData) {
     const slug = formData.get('slug') as string
     const content = formData.get('content') as string
     const excerpt = formData.get('excerpt') as string
-    const featured_image = formData.get('featured_image') as string
+    let featured_image = formData.get('featured_image') as string
+    const featuredImageFile = formData.get('featuredImageFile') as File | null
     const status = formData.get('status') as string
     const author_name = formData.get('author_name') as string
     const published_at = formData.get('published_at') as string
+
+    // Upload featured image if a file was provided
+    if (featuredImageFile) {
+      if (!supabaseServer) {
+        throw new Error('Supabase storage client not configured (missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY)')
+      }
+
+      const bucket = process.env.SUPABASE_BUCKET || 'public'
+      const fileName = `blog-${Date.now()}-${featuredImageFile.name}`
+      const path = `blog/${fileName}`
+      const { data, error } = await supabaseServer.storage
+        .from(bucket)
+        .upload(path, featuredImageFile, { cacheControl: '3600', upsert: false })
+      if (error) {
+        console.error('[v0] Supabase upload for blog featured image failed', error)
+        throw new Error('Supabase upload failed: ' + (error?.message || JSON.stringify(error)))
+      }
+      const publicRes = supabaseServer.storage.from(bucket).getPublicUrl(path)
+      featured_image = publicRes?.data?.publicUrl || featured_image
+    }
 
     const updated = await db.updateBlogPost(id, {
       title,

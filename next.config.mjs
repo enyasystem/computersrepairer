@@ -7,7 +7,14 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
-    unoptimized: true,
+    // allow external images from Supabase (storage.googleapis.com or your project's custom domain)
+    remotePatterns: [
+      // Example: allow public assets delivered via the Supabase storage CDN
+      { protocol: 'https', hostname: '*.supabase.co', pathname: '/**' },
+      { protocol: 'https', hostname: 'lh3.googleusercontent.com', pathname: '/**' },
+      // allow images from source.unsplash (used by some placeholders)
+      { protocol: 'https', hostname: 'source.unsplash.com', pathname: '/**' }
+    ]
   },
 }
 

@@ -1,6 +1,7 @@
 "use server"
 
 import { db } from "@/lib/database"
+import { supabaseServer } from '@/lib/supabase'
 import { redirect } from "next/navigation"
 import { revalidatePath } from "next/cache"
 
@@ -19,7 +20,7 @@ export async function createProduct(formData: FormData) {
     const category = formData.get("category") as string
     const brand = formData.get("brand") as string
     const sku = formData.get("sku") as string
-    const imageUrl = formData.get("image") as string
+    const imageFile = formData.get('imageFile') as File | null
     const inStock = formData.get("inStock") === "true"
     const stockQuantity = Number.parseInt(formData.get("stockQuantity") as string)
     const badge = formData.get("badge") as string
@@ -41,6 +42,24 @@ export async function createProduct(formData: FormData) {
       throw new Error("Missing required fields")
     }
 
+    // Upload image to Supabase Storage if provided
+    let imageUrl: string | undefined
+    if (imageFile && supabaseServer) {
+      try {
+        const bucket = process.env.SUPABASE_BUCKET || 'public'
+        const fileName = `${Date.now()}-${imageFile.name}`
+        const path = `products/${fileName}`
+        const { data, error } = await supabaseServer.storage
+          .from(bucket)
+          .upload(path, imageFile, { cacheControl: '3600', upsert: false })
+        if (error) throw error
+        const publicRes = supabaseServer.storage.from(bucket).getPublicUrl(path)
+        imageUrl = publicRes?.data?.publicUrl || undefined
+      } catch (e) {
+        console.warn('[v0] Supabase upload failed', e)
+      }
+    }
+
     // Create product in database
     const product = await db.createProduct({
       name,
@@ -51,7 +70,7 @@ export async function createProduct(formData: FormData) {
       category,
       brand,
       sku,
-      image_url: imageUrl,
+      image_url: imageUrl || imageUrl,
       in_stock: inStock,
       stock_quantity: stockQuantity,
   badge: badge === "none" ? undefined : badge,
@@ -113,12 +132,30 @@ export async function updateProduct(formData: FormData) {
     const category = formData.get('category') as string
     const brand = formData.get('brand') as string
     const sku = formData.get('sku') as string
-    const imageUrl = formData.get('image') as string
+    const imageFile = formData.get('imageFile') as File | null
     const inStock = formData.get('inStock') === 'true'
     const stockQuantity = formData.get('stockQuantity') ? Number.parseInt(formData.get('stockQuantity') as string) : undefined
     const badge = formData.get('badge') as string
     const status = formData.get('status') as string
     const specifications = formData.get('specifications') ? JSON.parse(formData.get('specifications') as string) : undefined
+
+    // Upload image to Supabase Storage if provided
+    let imageUrl: string | undefined
+    if (imageFile && supabaseServer) {
+      try {
+        const bucket = process.env.SUPABASE_BUCKET || 'public'
+        const fileName = `${Date.now()}-${imageFile.name}`
+        const path = `products/${fileName}`
+        const { data, error } = await supabaseServer.storage
+          .from(bucket)
+          .upload(path, imageFile, { cacheControl: '3600', upsert: false })
+        if (error) throw error
+        const publicRes = supabaseServer.storage.from(bucket).getPublicUrl(path)
+        imageUrl = publicRes?.data?.publicUrl || undefined
+      } catch (e) {
+        console.warn('[v0] Supabase upload failed', e)
+      }
+    }
 
     const updated = await db.updateProduct(id, {
       name,
@@ -129,7 +166,7 @@ export async function updateProduct(formData: FormData) {
       category,
       brand,
       sku,
-      image_url: imageUrl,
+      image_url: imageUrl || imageUrl,
       in_stock: inStock,
       stock_quantity: stockQuantity,
       badge: badge === 'none' ? undefined : badge,

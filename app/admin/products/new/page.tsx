@@ -46,6 +46,8 @@ export default function NewProductPage() {
     badge: "" as Product["badge"] | "",
     status: "active" as Product["status"],
   })
+  const [imageFile, setImageFile] = useState<File | null>(null)
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
 
   const handleInputChange = (field: string, value: string | boolean) => {
     setFormData((prev) => ({
@@ -102,7 +104,13 @@ export default function NewProductPage() {
       formDataForServer.append("category", formData.category)
       formDataForServer.append("brand", formData.brand)
       formDataForServer.append("sku", formData.sku)
-      formDataForServer.append("image", formData.image)
+      // If user provided an external URL, include it; if they uploaded a file, attach the File as 'imageFile'
+      if (formData.image) {
+        formDataForServer.append("image", formData.image)
+      }
+      if (imageFile) {
+        formDataForServer.append('imageFile', imageFile)
+      }
       formDataForServer.append("inStock", formData.inStock.toString())
       formDataForServer.append("stockQuantity", formData.stockQuantity)
       formDataForServer.append("badge", formData.badge || "none")
@@ -148,8 +156,10 @@ export default function NewProductPage() {
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (file) {
-      // In a real app, this would upload to a file storage service
+      setImageFile(file)
       const imageUrl = URL.createObjectURL(file)
+      setImagePreview(imageUrl)
+      // Also set the image URL field so users can still see the value; server action prefers file when provided
       handleInputChange("image", imageUrl)
     }
   }
@@ -416,7 +426,7 @@ export default function NewProductPage() {
                     {formData.image && (
                       <div className="aspect-square bg-muted rounded-lg overflow-hidden">
                         <Image
-                          src={formData.image || "/placeholder.svg"}
+                          src={imagePreview || formData.image || "/placeholder.svg"}
                           alt="Product image preview"
                           width={300}
                           height={300}

@@ -15,12 +15,16 @@ import { useToast } from '@/hooks/use-toast'
 import { ArrowLeft, Save, Eye, Upload } from 'lucide-react'
 import Link from 'next/link'
 
+// track selected featured image file
+import type { ChangeEvent } from 'react'
+
 export default function EditBlogPostPage({ params }: { params: { id: string } }) {
   const router = useRouter()
   const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
   const [post, setPost] = useState<any>(null)
   const [formData, setFormData] = useState({ title: '', excerpt: '', content: '', category: '', author: '', image: '', status: 'draft' })
+  const [featuredImageFile, setFeaturedImageFile] = useState<File | null>(null)
 
   useEffect(() => {
     let mounted = true
@@ -59,6 +63,8 @@ export default function EditBlogPostPage({ params }: { params: { id: string } })
       form.append('author_name', formData.author)
       form.append('published_at', status === 'published' ? new Date().toISOString() : '')
 
+      if (featuredImageFile) form.append('featuredImageFile', featuredImageFile)
+
       await updateBlogPost(form)
       toast({ title: 'Saved', description: 'Post updated' })
     } catch (err) {
@@ -74,6 +80,7 @@ export default function EditBlogPostPage({ params }: { params: { id: string } })
     if (file) {
       const url = URL.createObjectURL(file)
       setFormData((p) => ({ ...p, image: url }))
+      setFeaturedImageFile(file)
     }
   }
 

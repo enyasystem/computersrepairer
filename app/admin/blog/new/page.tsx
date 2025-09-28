@@ -14,6 +14,7 @@ import { AdminHeader } from "@/components/admin/header"
 import { blogCategories, generateSlug, calculateReadTime, type BlogPost } from "@/lib/blog"
 import { ArrowLeft, Save, Eye, Upload } from "lucide-react"
 import Link from "next/link"
+import { createBlogPost } from "../actions"
 
 /**
  * Create New Blog Post Page
@@ -35,6 +36,7 @@ export default function NewBlogPostPage() {
     image: "",
     status: "draft" as BlogPost["status"],
   })
+  const [featuredImageFile, setFeaturedImageFile] = useState<File | null>(null)
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({
@@ -47,45 +49,35 @@ export default function NewBlogPostPage() {
     setIsLoading(true)
 
     try {
-      // Generate slug and read time
       const slug = generateSlug(formData.title)
       const readTime = calculateReadTime(formData.content)
 
-      const newPost: Omit<BlogPost, "id"> = {
-        ...formData,
-        slug,
-        readTime,
-        status,
-        date: new Date().toISOString().split("T")[0],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+      const form = new FormData()
+      form.append('title', formData.title)
+      form.append('slug', slug)
+      form.append('content', formData.content)
+      form.append('excerpt', formData.excerpt)
+      form.append('featured_image', formData.image)
+      form.append('status', status)
+      form.append('author_name', formData.author)
+      form.append('published_at', status === 'published' ? new Date().toISOString() : '')
+      form.append('read_time', String(readTime))
+
+      if (featuredImageFile) form.append('featuredImageFile', featuredImageFile)
+
+      // Call server action which will persist and revalidate
+      try {
+        await createBlogPost(form)
+      } catch (err: any) {
+        // server action may redirect internally; if it throws other errors, surface them
+        console.error('[v0] createBlogPost server action error', err)
+        throw err
       }
 
-      // POST to API route to persist
-      const res = await fetch('/api/admin/blog', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: newPost.title,
-          slug: newPost.slug,
-          content: newPost.content,
-          excerpt: newPost.excerpt,
-          featured_image: newPost.image,
-          status: newPost.status,
-          author_name: newPost.author,
-          published_at: newPost.status === 'published' ? newPost.createdAt : null,
-        }),
-      })
-
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}))
-        throw new Error(err?.error || 'Failed to create post')
-      }
-
-      // Redirect to blog management on success
-      router.push('/admin/blog')
+      // If server action didn't redirect, navigate client-side
+      try { router.push('/admin/blog') } catch (_) {}
     } catch (error) {
-      console.error("Error saving post:", error)
+      console.error('Error saving post:', error)
     } finally {
       setIsLoading(false)
     }
@@ -94,9 +86,9 @@ export default function NewBlogPostPage() {
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (file) {
-      // In a real app, this would upload to a file storage service
       const imageUrl = URL.createObjectURL(file)
-      handleInputChange("image", imageUrl)
+      handleInputChange('image', imageUrl)
+      setFeaturedImageFile(file)
     }
   }
 
