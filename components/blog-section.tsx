@@ -9,52 +9,58 @@ import { useEffect, useRef, useState } from "react"
 export function BlogSection() {
   const [isVisible, setIsVisible] = useState(false)
   const sectionRef = useRef<HTMLElement>(null)
+  const [posts, setPosts] = useState<any[]>([])
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true)
-        }
-      },
-      { threshold: 0.1 },
-    )
+    let observer: IntersectionObserver | null = null
 
-    if (sectionRef.current) {
+    const handleIntersect = (entries: IntersectionObserverEntry[]) => {
+      const entry = entries[0]
+      if (entry && entry.isIntersecting) {
+        setIsVisible(true)
+      }
+    }
+
+    observer = new IntersectionObserver(handleIntersect, { threshold: 0.1 })
+
+    if (sectionRef.current && observer) {
       observer.observe(sectionRef.current)
     }
 
-    return () => observer.disconnect()
+    return () => {
+      if (observer) observer.disconnect()
+    }
   }, [])
 
-  const blogPosts = [
-    {
-      slug: "computer-repair-signs",
-      title: "5 Signs Your Computer Needs Professional Repair",
-      description:
-        "Learn to identify when your computer issues require expert attention and how to prevent major problems.",
-      date: "March 15, 2024",
-      readTime: "5 min read",
-      image: "/computer-repair-technician-working.jpg",
-    },
-    {
-      slug: "network-security-best-practices",
-      title: "Network Security Best Practices for Small Businesses",
-      description:
-        "Essential security measures every small business should implement to protect their network and data.",
-      date: "March 10, 2024",
-      readTime: "7 min read",
-      image: "/network-security-setup-office.jpg",
-    },
-    {
-      slug: "proactive-it-support-benefits",
-      title: "The Benefits of Proactive IT Support",
-      description: "Why preventive IT maintenance saves money and prevents downtime for your business operations.",
-      date: "March 5, 2024",
-      readTime: "6 min read",
-      image: "/it-support-team-monitoring-systems.jpg",
-    },
-  ]
+  useEffect(() => {
+    let mounted = true
+    async function load() {
+      setLoading(true)
+      try {
+        const res = await fetch('/api/blog/list')
+        if (!res.ok) throw new Error('Failed to load')
+        const json = await res.json()
+        if (mounted) {
+          setPosts((json.rows || []).map((p: any) => ({
+            slug: p.slug,
+            title: p.title,
+            description: p.excerpt || p.content?.slice(0, 140) || '',
+            date: new Date(p.published_at || p.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }),
+            readTime: p.read_time || '5 min read',
+            image: p.featured_image || '/placeholder.jpg',
+          })))
+        }
+      } catch (e) {
+        console.error('Failed to fetch blog posts', e)
+      } finally {
+        if (mounted) setLoading(false)
+      }
+    }
+
+    load()
+    return () => { mounted = false }
+  }, [])
 
   return (
     <section ref={sectionRef} className="py-20">
@@ -71,7 +77,23 @@ export function BlogSection() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {blogPosts.map((post, index) => (
+          {loading && Array.from({ length: 3 }).map((_, i) => (
+            <article key={`skeleton-${i}`} className={`card overflow-hidden animate-pulse bg-muted`}>
+              <div className="aspect-[16/9] bg-muted" />
+              <div className="p-4">
+                <div className="h-3 bg-surface rounded mb-3 w-1/4" />
+                <div className="h-5 bg-surface rounded mb-2 w-3/4" />
+                <div className="h-3 bg-surface rounded mb-4 w-full" />
+                <div className="h-9 bg-surface rounded w-24" />
+              </div>
+            </article>
+          ))}
+
+          {!loading && posts.length === 0 && (
+            <div className="col-span-3 text-center text-muted-foreground">No posts available.</div>
+          )}
+
+          {!loading && posts.map((post, index) => (
             <article
               key={index}
               className={`card overflow-hidden transform-gpu hover:scale-105 hover:-translate-y-2 transition-all duration-500 ${
