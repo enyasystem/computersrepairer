@@ -212,9 +212,11 @@ export function generateSKU(name: string, brand: string): string {
  * Format price for display
  */
 export function formatPrice(price: number): string {
-  return new Intl.NumberFormat("en-US", {
+  // Format using Nigerian Naira symbol
+  return new Intl.NumberFormat("en-NG", {
     style: "currency",
-    currency: "USD",
+    currency: "NGN",
+    maximumFractionDigits: 2,
   }).format(price)
 }
 

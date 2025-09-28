@@ -34,6 +34,12 @@ export default async function ShopPage() {
 		)
 	}
 
+	// Helper to ensure we always format numeric prices with the Naira symbol
+	function renderPrice(price: any) {
+		const n = Number(price)
+		return Number.isFinite(n) ? formatCurrencyNGN(n) : String(price ?? "")
+	}
+
 	return (
 		<div className="min-h-screen bg-background">
 			{/* Header */}
@@ -92,15 +98,11 @@ export default async function ShopPage() {
 								<StarRating rating={product.rating} />
 								<div className="flex items-center gap-2 mt-3">
 									<span className="text-2xl font-bold text-primary">
-										{typeof product.price === "number"
-											? formatCurrencyNGN(product.price)
-											: String(product.price ?? "")}
+										{renderPrice(product.price)}
 									</span>
 									{product.original_price && (
 										<span className="text-lg text-muted-foreground line-through">
-											{typeof product.original_price === "number"
-												? formatCurrencyNGN(product.original_price)
-												: product.original_price}
+											{renderPrice(product.original_price)}
 										</span>
 									)}
 								</div>

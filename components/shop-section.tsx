@@ -12,6 +12,11 @@ export async function ShopSection() {
   const paged = await db.getProductsPaged(1, 3, { activeOnly: true, bypassCache: false })
   const products = Array.isArray(paged?.rows) ? paged.rows : []
 
+  const renderPrice = (price: any) => {
+    const n = Number(price)
+    return Number.isFinite(n) ? formatCurrencyNGN(n) : String(price ?? "")
+  }
+
   return (
     <section className="py-20 bg-muted/30">
       <div className="container mx-auto px-4">
@@ -58,11 +63,9 @@ export async function ShopSection() {
               </CardHeader>
               <CardContent>
                 <div className="flex items-center gap-2 mb-4">
-                  <span className="text-2xl font-bold text-primary">
-                    {typeof product.price === 'number' ? formatCurrencyNGN(product.price) : String(product.price ?? '')}
-                  </span>
+                  <span className="text-2xl font-bold text-primary">{renderPrice(product.price)}</span>
                   {product.original_price && (
-                    <span className="text-lg text-muted-foreground line-through">{typeof product.original_price === 'number' ? formatCurrencyNGN(product.original_price) : product.original_price}</span>
+                    <span className="text-lg text-muted-foreground line-through">{renderPrice(product.original_price)}</span>
                   )}
                 </div>
                 <Link href={`/shop/${product.id}`} className="w-full">
