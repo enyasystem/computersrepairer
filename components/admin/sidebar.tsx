@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
@@ -17,7 +17,9 @@ import {
   ChevronRight,
   Wrench,
   Calendar,
+  LogOut,
 } from "lucide-react"
+import { logout } from "@/lib/auth"
 
 /**
  * Admin Sidebar Component
@@ -30,6 +32,16 @@ import {
 export function AdminSidebar({ isOpen, onClose }: { isOpen?: boolean; onClose?: () => void }) {
   const [isCollapsed, setIsCollapsed] = useState(false)
   const pathname = usePathname()
+  const router = useRouter()
+
+  const handleLogout = () => {
+    try {
+      logout()
+    } finally {
+      // ensure navigation away even if logout fetch fails silently
+      router.push('/admin/login')
+    }
+  }
 
   const navigationItems = [
     {
@@ -144,12 +156,22 @@ export function AdminSidebar({ isOpen, onClose }: { isOpen?: boolean; onClose?: 
 
             {/* Footer */}
             <div className="p-4 border-t border-sidebar-border">
-              {!isCollapsed && (
-                <div className="text-xs text-sidebar-foreground/60">
-                  <p>Computer Repair Admin</p>
-                  <p>Version 1.0.0</p>
-                </div>
-              )}
+              <div className="space-y-2">
+                <Button
+                  variant="ghost"
+                  className="w-full justify-start"
+                  onClick={handleLogout}
+                >
+                  <LogOut className="h-4 w-4 mr-2" />
+                  {!isCollapsed && <span>Logout</span>}
+                </Button>
+                {!isCollapsed && (
+                  <div className="text-xs text-sidebar-foreground/60">
+                    <p>Computer Repair Admin</p>
+                    <p>Version 1.0.0</p>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -223,12 +245,22 @@ export function AdminSidebar({ isOpen, onClose }: { isOpen?: boolean; onClose?: 
 
           {/* Footer */}
           <div className="p-4 border-t border-sidebar-border">
-            {!isCollapsed && (
-              <div className="text-xs text-sidebar-foreground/60">
-                <p>Computer Repair Admin</p>
-                {/* <p>Version 1.0.0</p> */}
-              </div>
-            )}
+            <div className="space-y-2">
+              <Button
+                variant="ghost"
+                className="w-full justify-start"
+                onClick={handleLogout}
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                {!isCollapsed && <span>Logout</span>}
+              </Button>
+              {!isCollapsed && (
+                <div className="text-xs text-sidebar-foreground/60">
+                  <p>Computer Repair Admin</p>
+                  {/* <p>Version 1.0.0</p> */}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
