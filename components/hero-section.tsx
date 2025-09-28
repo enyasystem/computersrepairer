@@ -22,11 +22,11 @@ export function HeroSection() {
               isVisible ? "translate-x-0 opacity-100" : "-translate-x-full opacity-0"
             }`}
           >
-            <div className="rounded-lg overflow-hidden shadow-2xl hover:shadow-3xl transition-shadow duration-500 transform-gpu">
+            <div className="overflow-hidden ml-6 md:ml-8 lg:ml-12">
               <img
                 src="/computer-repair-technician-working.jpg"
                 alt="Technician repairing a computer"
-                className="w-full h-[420px] object-cover sm:h-[360px] lg:h-[480px] transition-transform duration-500 hover:scale-105"
+                className="w-full h-[420px] object-cover sm:h-[360px] lg:h-[480px] transition-transform duration-500 hover:scale-105 rounded-md"
                 loading="eager"
               />
             </div>
