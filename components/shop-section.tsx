@@ -3,40 +3,14 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { ShoppingCart, Star } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
+import { db } from "@/lib/database"
+import { formatCurrencyNGN } from "@/lib/format"
 
-export function ShopSection() {
-  const products = [
-    {
-      id: "gaming-laptop-asus-rog",
-      name: "Gaming Laptop - RTX 4060",
-      description: "High-performance gaming laptop with RTX 4060 graphics card, perfect for gaming and creative work.",
-      price: "₦1,299.99",
-      originalPrice: "₦1,499.99",
-      rating: 4.8,
-      image: "/gaming-laptop-rtx-graphics-card.jpg",
-      badge: "Best Seller",
-    },
-    {
-      id: "business-desktop-pc",
-      name: "Business Desktop PC",
-      description: "Reliable desktop computer optimized for business use with Intel i7 processor and 16GB RAM.",
-      price: "₦899.99",
-      originalPrice: null,
-      rating: 4.6,
-      image: "/business-desktop-computer-office-setup.jpg",
-      badge: "New",
-    },
-    {
-      id: "wireless-router-pro",
-      name: "Wireless Router Pro",
-      description: "High-speed wireless router with advanced security features and mesh network capability.",
-      price: "₦199.99",
-      originalPrice: "₦249.99",
-      rating: 4.7,
-      image: "/wireless-router-networking-equipment.jpg",
-      badge: "Sale",
-    },
-  ]
+export async function ShopSection() {
+  // Fetch a small set of featured products from the database (server-side)
+  const paged = await db.getProductsPaged(1, 3, { activeOnly: true, bypassCache: false })
+  const products = Array.isArray(paged?.rows) ? paged.rows : []
 
   return (
     <section className="py-20 bg-muted/30">
@@ -49,14 +23,15 @@ export function ShopSection() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {products.map((product, index) => (
-            <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
+          {products.map((product: any, index: number) => (
+            <Card key={product.id || index} className="overflow-hidden hover:shadow-lg transition-shadow">
               <div className="relative">
                 <div className="aspect-square bg-muted">
-                  <img
-                    src={product.image || "/placeholder.svg"}
-                    alt={product.name}
-                    className="w-full h-full object-cover"
+                  <Image
+                    src={product.image_url || product.image || "/placeholder.svg"}
+                    alt={product.name || 'Product'}
+                    fill
+                    className="object-cover"
                   />
                 </div>
                 {product.badge && (
@@ -73,19 +48,21 @@ export function ShopSection() {
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={i}
-                      className={`h-4 w-4 ${i < Math.floor(product.rating) ? "text-yellow-400 fill-current" : "text-gray-300"}`}
+                      className={`h-4 w-4 ${i < Math.floor(Number(product.rating) || 0) ? "text-yellow-400 fill-current" : "text-gray-300"}`}
                     />
                   ))}
-                  <span className="text-sm text-muted-foreground ml-2">({product.rating})</span>
+                  <span className="text-sm text-muted-foreground ml-2">({product.rating ?? 0})</span>
                 </div>
                 <CardTitle className="text-lg text-balance">{product.name}</CardTitle>
                 <CardDescription className="text-pretty">{product.description}</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center gap-2 mb-4">
-                  <span className="text-2xl font-bold text-primary">{product.price}</span>
-                  {product.originalPrice && (
-                    <span className="text-lg text-muted-foreground line-through">{product.originalPrice}</span>
+                  <span className="text-2xl font-bold text-primary">
+                    {typeof product.price === 'number' ? formatCurrencyNGN(product.price) : String(product.price ?? '')}
+                  </span>
+                  {product.original_price && (
+                    <span className="text-lg text-muted-foreground line-through">{typeof product.original_price === 'number' ? formatCurrencyNGN(product.original_price) : product.original_price}</span>
                   )}
                 </div>
                 <Link href={`/shop/${product.id}`} className="w-full">
