@@ -58,6 +58,8 @@ export default function AdminProductsClient({ products, total, page, perPage }: 
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [deletingProduct, setDeletingProduct] = useState<DbProduct | null>(null)
   const [deleting, setDeleting] = useState(false)
+  // unified delete (soft) flow only; hard delete UI removed
+  const [liveLoading, setLiveLoading] = useState(true)
   
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState<string>("all")
@@ -71,6 +73,7 @@ export default function AdminProductsClient({ products, total, page, perPage }: 
     let mounted = true
     ;(async () => {
       try {
+        setLiveLoading(true)
         const res = await fetch('/api/admin/products/list?bypassCache=1&usePrimary=1')
         if (!res.ok) return
         const j = await res.json()
@@ -80,6 +83,8 @@ export default function AdminProductsClient({ products, total, page, perPage }: 
         }
       } catch (err) {
         console.warn('[v0][client] Failed to fetch live products list', err)
+      } finally {
+        if (mounted) setLiveLoading(false)
       }
     })()
     return () => { mounted = false }
@@ -388,137 +393,120 @@ export default function AdminProductsClient({ products, total, page, perPage }: 
           </div>
 
           <div className="rounded-md border">
-            {/* Desktop/large: table view */}
-            <div className="hidden md:block">
-              <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Product</TableHead>
-                  <TableHead>SKU</TableHead>
-                  <TableHead>Category</TableHead>
-                  <TableHead>Price</TableHead>
-                  <TableHead>Stock</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredProducts.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
-                      No products found matching your criteria.
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  filteredProducts.map((product: any) => (
-                    <TableRow key={product.id}>
-                      <TableCell>
-                        <div className="flex items-center space-x-3">
-                          <div className="relative w-12 h-12 flex-shrink-0 overflow-hidden rounded-md">
-                            <Image src={product.image || "/placeholder.svg"} alt={product.name} fill className="object-cover" />
-                          </div>
-                          <div>
-                            <div className="font-medium">{product.name}</div>
-                            <div className="text-sm text-muted-foreground">{product.brand}</div>
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell className="font-mono text-sm">{product.sku}</TableCell>
-                      <TableCell>
-                        <Badge variant="secondary">{product.category}</Badge>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex flex-col">
-                          <span className="font-medium">{formatCurrencyNGN(Number(product.price))}</span>
-                          {product.original_price && (
-                            <span className="text-sm text-muted-foreground line-through">{formatCurrencyNGN(Number(product.original_price))}</span>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex items-center space-x-2">
-                          <div
-                            className={`h-2 w-2 rounded-full ${
-                              !product.in_stock
-                                ? "bg-red-500"
-                                : product.stock_quantity <= 10
-                                  ? "bg-yellow-500"
-                                  : "bg-green-500"
-                            }`}
-                          />
-                          <span className="text-sm">{product.in_stock ? `${product.stock_quantity} units` : "Out of stock"}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={product.status === "active" ? "default" : product.status === "inactive" ? "secondary" : "outline"}>{product.status}</Badge>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <ActionMenu product={product} />
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-              </Table>
-            </div>
-
-            {/* Mobile: card list with inline actions */}
-            <div className="block md:hidden">
-              <div className="space-y-3 p-3">
-                {filteredProducts.length === 0 ? (
-                  <div className="text-center py-8 text-muted-foreground">No products found matching your criteria.</div>
-                ) : (
-                  filteredProducts.map((product: any) => (
-                    <div key={product.id} className="flex items-center justify-between space-x-3 border rounded-md p-3">
-                      <div className="flex items-center space-x-3">
-                        <div className="relative w-16 h-16 flex-shrink-0 overflow-hidden rounded-md">
-                          <Image src={product.image || "/placeholder.svg"} alt={product.name} fill className="object-cover" />
-                        </div>
-                        <div>
-                          <div className="font-medium truncate max-w-xs">{product.name}</div>
-                          <div className="text-sm text-muted-foreground">{product.brand}</div>
-                          <div className="text-sm">{formatCurrencyNGN(Number(product.price))}</div>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center space-x-2">
-                        <Link href={`/admin/products/edit/${product.id}`} className="text-sm px-2 py-1 rounded bg-slate-100 hover:bg-slate-200">Edit</Link>
-                        <button onClick={() => { setDeletingProduct(product); setConfirmOpen(true) }} className="text-sm px-2 py-1 rounded bg-red-50 text-destructive">Delete</button>
-                        <button onClick={() => handleStatusChange(product.id, product.status === 'active' ? 'inactive' : 'active')} className="text-sm px-2 py-1 rounded bg-slate-50">{product.status === 'active' ? 'Deactivate' : 'Activate'}</button>
-                      </div>
-                    </div>
-                  ))
-                )}
+            {liveLoading ? (
+              <div className="p-6">
+                <div className="space-y-3">
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <div key={i} className="h-12 bg-slate-100 rounded animate-pulse" />
+                  ))}
+                </div>
               </div>
-            </div>
+            ) : (
+              <>
+                {/* Desktop/large: table view */}
+                <div className="hidden md:block">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Product</TableHead>
+                        <TableHead>SKU</TableHead>
+                        <TableHead>Category</TableHead>
+                        <TableHead>Price</TableHead>
+                        <TableHead>Stock</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredProducts.length === 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                            No products found matching your criteria.
+                          </TableCell>
+                        </TableRow>
+                      ) : (
+                        filteredProducts.map((product) => (
+                          <TableRow key={product.id}>
+                            <TableCell>
+                              <div className="flex items-center gap-3">
+                                {product.image_url ? (
+                                  <Image src={product.image_url} alt={product.name} width={48} height={48} className="rounded-md object-cover" />
+                                ) : (
+                                  <div className="w-12 h-12 bg-slate-100 rounded-md" />
+                                )}
+                                <div>
+                                  <div className="font-medium">{product.name}</div>
+                                  <div className="text-xs text-muted-foreground">{product.brand || '—'}</div>
+                                </div>
+                              </div>
+                            </TableCell>
+                            <TableCell>{product.sku || '—'}</TableCell>
+                            <TableCell>{product.category}</TableCell>
+                            <TableCell>{formatCurrencyNGN(product.price)}</TableCell>
+                            <TableCell>{product.in_stock ? `${product.stock_quantity}` : 'Out'}</TableCell>
+                            <TableCell>
+                              <Badge variant={product.status === 'active' ? 'secondary' : 'outline'}>{product.status}</Badge>
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <div className="inline-flex items-center gap-2">
+                                <ActionMenu product={product} />
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
+
+                {/* Mobile: stacked view */}
+                <div className="md:hidden">
+                  <div className="divide-y">
+                    {filteredProducts.length === 0 ? (
+                      <div className="p-6 text-center text-muted-foreground">No products found matching your criteria.</div>
+                    ) : (
+                      filteredProducts.map((product) => (
+                        <div key={product.id} className="p-4 flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            {product.image_url ? (
+                              <Image src={product.image_url} alt={product.name} width={56} height={56} className="rounded-md object-cover" />
+                            ) : (
+                              <div className="w-14 h-14 bg-slate-100 rounded-md" />
+                            )}
+                            <div>
+                              <div className="font-medium">{product.name}</div>
+                              <div className="text-xs text-muted-foreground">{product.category} • {product.sku || '—'}</div>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="text-sm">{formatCurrencyNGN(product.price)}</div>
+                            <ActionMenu product={product} />
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              </>
+            )}
           </div>
+
         </CardContent>
       </Card>
-      {/* Pagination controls */}
-      {typeof total !== 'undefined' && (
-        <div className="flex items-center justify-between">
-          <div className="text-sm text-muted-foreground">Showing page {page} — {localProducts.length} products</div>
-          <div className="flex items-center space-x-2">
-            <Link href={`?page=${Math.max(1, (page || 1) - 1)}&perPage=${perPage || 10}`} className="px-3 py-1 rounded border hover:bg-slate-50">Previous</Link>
-            <Link href={`?page=${(page || 1) + 1}&perPage=${perPage || 10}`} className="px-3 py-1 rounded border hover:bg-slate-50">Next</Link>
-          </div>
-        </div>
-      )}
-    {/* Confirm delete dialog */}
-    <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-            <AlertDialogTitle>Delete product?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to delete {deletingProduct?.name}? You can restore it later.
-            </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={() => confirmDeleteClicked()} disabled={deleting}>{deleting ? 'Deleting...' : 'Delete'}</AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+
+      {/* Confirm delete dialog */}
+      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete product</AlertDialogTitle>
+            <AlertDialogDescription>Are you sure you want to delete this product? This action cannot be undone.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setConfirmOpen(false)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDeleteClicked} className="bg-destructive text-white">{deleting ? 'Deleting...' : 'Delete'}</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }
