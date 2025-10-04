@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { CheckCircle, Clock, Shield, Wrench, Network, HardDrive, Smartphone, Monitor } from "lucide-react"
+import Link from "next/link"
 
 const services = [
 	{
@@ -170,7 +171,9 @@ export default function ServicesPage() {
 											</li>
 										))}
 									</ul>
-									<Button className="w-full">Get Quote</Button>
+									<Button asChild className="w-full">
+										<Link href={`/book-appointment?service=${encodeURIComponent(service.title)}`}>Get Quote</Link>
+									</Button>
 								</CardContent>
 							</Card>
 						))}
@@ -239,15 +242,11 @@ export default function ServicesPage() {
 						needs
 					</p>
 					<div className="flex flex-col sm:flex-row gap-4 justify-center">
-						<Button size="lg" className="px-8">
-							Schedule Service
+						<Button asChild size="lg" className="px-8">
+							<Link href="/book-appointment">Schedule Service</Link>
 						</Button>
-						<Button
-							size="lg"
-							variant="outline"
-							className="px-8 bg-transparent"
-						>
-							Get Free Quote
+						<Button asChild size="lg" variant="outline" className="px-8 bg-transparent">
+							<Link href="/contact">Get Free Quote</Link>
 						</Button>
 					</div>
 				</div>

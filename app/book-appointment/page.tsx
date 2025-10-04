@@ -118,10 +118,10 @@ export default function BookAppointmentPage() {
                   </CardHeader>
                   <CardContent className="space-y-2">
                     <p className="text-sm">
-                      <span className="font-medium">Phone:</span> (555) 123-4567
+                      <span className="font-medium">Phone:</span> +234 816 047 2457
                     </p>
                     <p className="text-sm">
-                      <span className="font-medium">Email:</span> info@techrepair.com
+                      <span className="font-medium">Email:</span> info@computersrepairer.com
                     </p>
                     <p className="text-sm">
                       <span className="font-medium">Address:</span> 12A Adeola Odeku Street, Victoria Island, Lagos

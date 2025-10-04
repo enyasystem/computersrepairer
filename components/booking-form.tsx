@@ -69,7 +69,7 @@ export function BookingForm() {
         </div>
         <div className="space-y-2">
           <Label htmlFor="customer_phone">Phone Number</Label>
-          <Input id="customer_phone" name="customer_phone" type="tel" placeholder="(555) 123-4567" />
+          <Input id="customer_phone" name="customer_phone" type="tel" placeholder="+234 812 345 6789" />
         </div>
       </div>
 

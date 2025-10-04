@@ -73,9 +73,9 @@ export function ContactSection() {
                   Request a Quote
                 </Button>
               </Link>
-              <Button variant="ghost" size="lg" className="w-full text-lg">
+              {/* <Button variant="ghost" size="lg" className="w-full text-lg">
                 Emergency Support
-              </Button>
+              </Button> */}
             </div>
             <p className="text-center text-sm text-muted-foreground mt-6">
               Free diagnostics • No fix, no fee • 30-day warranty on all repairs
