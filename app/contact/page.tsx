@@ -16,13 +16,13 @@ const contactInfo = [
   {
     icon: <Phone className="h-6 w-6" />,
     title: "Phone",
-    details: ["+234 803 000 0000", "Emergency: +234 803 000 0001"],
+    details: ["+234 816 047 2457"],
     description: "Call us for immediate assistance",
   },
   {
     icon: <Mail className="h-6 w-6" />,
     title: "Email",
-    details: ["info@computersrepairer.com", "support@computersrepairer.com"],
+    details: ["info@computersrepairer.com",],
     description: "Send us your questions anytime",
   },
   {
@@ -152,7 +152,7 @@ export default function ContactPage() {
                 <CardDescription>Fill out the form below and we'll get back to you within 24 hours</CardDescription>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form id="contact-form" onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="name">Full Name *</Label>
@@ -291,7 +291,7 @@ export default function ContactPage() {
                   </p>
                   <Button variant="destructive" size="lg" className="w-full">
                     <Phone className="h-5 w-5 mr-2" />
-                    Emergency: +234 803 000 0001
+                    Emergency: +234 816 047 2457
                   </Button>
                 </CardContent>
               </Card>

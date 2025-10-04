@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button"
+import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Phone, Mail, MapPin, Clock } from "lucide-react"
 
@@ -67,9 +68,11 @@ export function ContactSection() {
               <Button size="lg" className="w-full text-lg">
                 Schedule a Consultation
               </Button>
-              <Button variant="outline" size="lg" className="w-full text-lg bg-transparent">
-                Request a Quote
-              </Button>
+              <Link href="/contact#contact-form" className="block">
+                <Button variant="outline" size="lg" className="w-full text-lg bg-transparent">
+                  Request a Quote
+                </Button>
+              </Link>
               <Button variant="ghost" size="lg" className="w-full text-lg">
                 Emergency Support
               </Button>
