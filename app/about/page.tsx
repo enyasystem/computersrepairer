@@ -6,25 +6,26 @@ import Image from "next/image"
 
 const teamMembers = [
   {
-    name: "John Smith",
+    name: "Kunle Adebayo",
     role: "Lead Technician",
-    experience: "15+ years",
-    certifications: ["CompTIA A+", "Microsoft Certified"],
-    image: "/professional-technician-headshot.jpg",
-  },
-  {
-    name: "Sarah Johnson",
-    role: "Network Specialist",
     experience: "12+ years",
-    certifications: ["Cisco CCNA", "CompTIA Network+"],
-    image: "/placeholder-hcul6.png",
+    certifications: ["CompTIA A+", "Microsoft Certified"],
+    // Unsplash portrait (Nigerian-style headshot)
+    image: "/lead-technician.jpg",
   },
   {
-    name: "Mike Chen",
-    role: "Data Recovery Expert",
+    name: "Ngozi Okonkwo",
+    role: "Network Specialist",
     experience: "10+ years",
+    certifications: ["Cisco CCNA", "CompTIA Network+"],
+    image: "/lady-sec.jpg",
+  },
+  {
+    name: "Chinedu Obi",
+    role: "Data Recovery Expert",
+    experience: "8+ years",
     certifications: ["Certified Data Recovery", "CompTIA Security+"],
-    image: "/placeholder-aasj4.png",
+    image: "/Chinedu-Obi.jpg",
   },
 ]
 
@@ -142,13 +143,13 @@ export default function AboutPage() {
             {teamMembers.map((member, index) => (
               <Card key={index} className="text-center hover:shadow-lg transition-shadow">
                 <CardHeader>
-                  <div className="relative w-32 h-32 mx-auto mb-4">
+                  <div className="relative w-32 h-32 mx-auto mb-4 rounded-full overflow-hidden">
                     <Image
                       src={member.image || "/placeholder.svg"}
                       alt={member.name}
                       width={128}
                       height={128}
-                      className="rounded-full object-cover"
+                      className="object-cover w-full h-full"
                     />
                   </div>
                   <CardTitle className="text-xl">{member.name}</CardTitle>
