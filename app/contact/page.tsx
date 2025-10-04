@@ -253,12 +253,17 @@ export default function ContactPage() {
                   <CardDescription>Come visit us at our repair center for in-person service</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="aspect-video bg-muted rounded-lg mb-4 flex items-center justify-center">
-                    <div className="text-center text-muted-foreground">
-                      <MapPin className="h-12 w-12 mx-auto mb-2" />
-                      <p>Interactive Map</p>
-                      <p className="text-sm">12A Adeola Odeku Street, Victoria Island, Lagos 106104</p>
-                    </div>
+                  <div className="aspect-[16/9] rounded-lg mb-4 overflow-hidden">
+                    <iframe
+                      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d253682.63648064286!2d3.1191411480839006!3d6.548028242844956!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x103b8b2ae68280c1%3A0xdc9e87a367c3d9cb!2sLagos!5e0!3m2!1sen!2sng!4v1759597716871!5m2!1sen!2sng"
+                      width="600"
+                      height="450"
+                      className="w-full h-full border-0"
+                      style={{ border: 0 }}
+                      allowFullScreen={true}
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                    />
                   </div>
                   <div className="space-y-4">
                     <div>
