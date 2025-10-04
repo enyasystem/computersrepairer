@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Award, Users, Clock } from "lucide-react"
 import Image from "next/image"
+import Link from 'next/link'
 
 const teamMembers = [
   {
@@ -52,9 +53,11 @@ export default function AboutPage() {
                 solutions since 2009.
               </p>
               <div className="flex flex-wrap gap-4">
-                <Button size="lg">Contact Us</Button>
-                <Button size="lg" variant="outline">
-                  View Services
+                <Button asChild size="lg">
+                  <Link href="/contact">Contact Us</Link>
+                </Button>
+                <Button asChild size="lg" variant="outline">
+                  <Link href="/services">View Services</Link>
                 </Button>
               </div>
             </div>
@@ -221,15 +224,11 @@ export default function AboutPage() {
             Join thousands of satisfied customers who trust ComputersRepairer for their technology needs
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" variant="secondary" className="px-8">
-              Get Started Today
+            <Button asChild size="lg" variant="secondary" className="px-8">
+              <Link href="/services">Get Started Today</Link>
             </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="px-8 border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary bg-transparent"
-            >
-              Contact Us
+            <Button asChild size="lg" variant="outline" className="px-8 border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary bg-transparent">
+              <Link href="/contact">Contact Us</Link>
             </Button>
           </div>
         </div>
