@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { MapPin, Phone, Mail, Clock, MessageSquare, Calendar } from "lucide-react"
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 
 const contactInfo = [
   {
@@ -103,7 +103,7 @@ export default function ContactPage() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" className="px-8">
                 <Phone className="h-5 w-5 mr-2" />
-                Call Now: +234 803 000 0000
+                Call Now: +234 816 047 2457
               </Button>
               <Button size="lg" variant="outline" className="px-8 bg-transparent">
                 <Calendar className="h-5 w-5 mr-2" />
@@ -300,7 +300,7 @@ export default function ContactPage() {
         </div>
       </section>
 
-      {/* FAQ Section */}
+      {/* FAQ Section (interactive accordion) */}
       <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
@@ -308,32 +308,79 @@ export default function ContactPage() {
             <p className="text-lg text-muted-foreground">Quick answers to common questions</p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            <div>
-              <h3 className="font-semibold mb-2">How long do repairs typically take?</h3>
-              <p className="text-muted-foreground text-sm mb-4">
-                Most repairs are completed within 24-48 hours. Simple issues like virus removal can often be done
-                same-day.
-              </p>
-            </div>
-            <div>
-              <h3 className="font-semibold mb-2">Do you offer warranties on repairs?</h3>
-              <p className="text-muted-foreground text-sm mb-4">
-                Yes, we provide a 90-day warranty on all repairs and a 30-day warranty on used parts.
-              </p>
-            </div>
-            <div>
-              <h3 className="font-semibold mb-2">Can you recover my lost data?</h3>
-              <p className="text-muted-foreground text-sm mb-4">
-                We offer professional data recovery services with a high success rate. Contact us for a free evaluation.
-              </p>
-            </div>
-            <div>
-              <h3 className="font-semibold mb-2">Do you provide on-site service?</h3>
-              <p className="text-muted-foreground text-sm mb-4">
-                Yes, we offer on-site service for businesses and complex network installations. Contact us for pricing.
-              </p>
-            </div>
+          <div className="max-w-4xl mx-auto">
+            {/* Interactive FAQ accordion (React state + measured height for smooth animation) */}
+            {(
+              [
+                {
+                  q: 'How long do repairs typically take?',
+                  a: `Most repairs are completed within 24-48 hours. Simple issues like virus removal can often be done same-day.`,
+                },
+                {
+                  q: 'Do you offer warranties on repairs?',
+                  a: `Yes, we provide a 90-day warranty on all repairs and a 30-day warranty on used parts.`,
+                },
+                {
+                  q: 'Can you recover my lost data?',
+                  a: `We offer professional data recovery services with a high success rate. Contact us for a free evaluation.`,
+                },
+                {
+                  q: 'Do you provide on-site service?',
+                  a: `Yes, we offer on-site service for businesses and complex network installations. Contact us for pricing.`,
+                },
+              ] as { q: string; a: string }[]
+            ).map((item, idx) => {
+              const panelRef = useRef<HTMLDivElement | null>(null)
+              const [open, setOpen] = useState(false)
+
+              useEffect(() => {
+                const panel = panelRef.current
+                if (!panel) return
+                if (open) {
+                  const height = panel.scrollHeight
+                  panel.style.maxHeight = height + 'px'
+                } else {
+                  panel.style.maxHeight = '0px'
+                }
+              }, [open])
+
+              return (
+                <div key={idx} className="border-b last:border-b-0">
+                  <button
+                    type="button"
+                    aria-expanded={open}
+                    aria-controls={`faq-${idx}-panel`}
+                    onClick={() => setOpen((v) => !v)}
+                    className="w-full text-left py-4 flex items-center justify-between gap-4"
+                  >
+                    <span className="font-semibold">{item.q}</span>
+                    <svg
+                      className={`h-5 w-5 text-muted-foreground transform transition-transform duration-300 ${open ? 'rotate-180' : ''}`}
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      aria-hidden
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+
+                  <div
+                    id={`faq-${idx}-panel`}
+                    role="region"
+                    aria-labelledby={`faq-${idx}`}
+                    ref={panelRef}
+                    className="overflow-hidden transition-[max-height,opacity] duration-300 opacity-100"
+                    style={{ maxHeight: 0 }}
+                  >
+                    <div className="py-2 pb-6 text-muted-foreground text-sm">
+                      {item.a}
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
           </div>
         </div>
       </section>
