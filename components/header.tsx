@@ -70,7 +70,7 @@ export function Header() {
   const shopDropdown = [
     { name: "Laptops", href: "/shop?category=laptops", description: "Gaming & business laptops" },
     { name: "Accessories", href: "/shop?category=accessories", description: "Keyboards, mice & peripherals" },
-    { name: "Components", href: "/shop?category=components", description: "RAM, SSDs & graphics cards" },
+  { name: "Software", href: "/shop?category=software", description: "OS, drivers & utilities" },
     { name: "All Products", href: "/shop", description: "Browse complete catalog" },
   ]
 
