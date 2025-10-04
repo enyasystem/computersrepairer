@@ -56,3 +56,19 @@ This project is automatically deployed to Vercel:
 ## License
 
 MIT License
+
+## Environment variables
+
+This project reads configuration from environment variables. For local development:
+
+1. Copy `.env.example` to `.env.local`.
+2. Fill in real values for secrets (do not commit `.env.local`).
+
+Key variables included in `.env.example`:
+
+- `DATABASE_URL` (required) — Postgres/Neon connection string used by the app.
+- `DATABASE_PRIMARY_URL` (optional) — Primary/writer DB URL when using Neon replicas.
+- `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` (optional) — Supabase storage/service role key.
+- `ADMIN_USER` and `ADMIN_PASS` — local admin credentials used by some scripts/tests.
+
+If you see the error "DATABASE_URL environment variable is not set", create `.env.local` and set `DATABASE_URL` to your Neon/Postgres connection string.
