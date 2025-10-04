@@ -59,7 +59,7 @@ export default function AboutPage() {
             </div>
             <div className="relative">
               <Image
-                src="/placeholder-7hj7r.png"
+                src="/computer repairers logo.png"
                 alt="ComputersRepairer shop interior"
                 width={600}
                 height={500}
@@ -116,7 +116,7 @@ export default function AboutPage() {
               </div>
               <div className="relative">
                 <Image
-                  src="/placeholder-zq9se.png"
+                  src="/computer repairers logo.png"
                   alt="Our journey"
                   width={500}
                   height={400}
