@@ -30,7 +30,7 @@ export default function AdminCustomersPage() {
       id: 1,
       name: "John Smith",
       email: "john.smith@email.com",
-      phone: "+1 (555) 123-4567",
+      phone: "+234 816 047 2457",
       address: "123 Main St, City, State 12345",
       joinDate: "2024-01-15",
       totalSpent: 1250,

@@ -125,7 +125,7 @@ export function Footer() {
                 <Phone className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
                 <div>
                   <div className="font-medium text-white">Call Us</div>
-                  <div className="text-slate-300">(555) 123-4567</div>
+                  <div className="text-slate-300">+234 816 047 2457</div>
                 </div>
               </div>
               <div className="flex items-start gap-3">

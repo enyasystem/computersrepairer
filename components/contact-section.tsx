@@ -25,7 +25,7 @@ export function ContactSection() {
                 <CardDescription>Call us for immediate assistance</CardDescription>
               </CardHeader>
               <CardContent>
-                <p className="text-lg font-semibold">(555) 123-4567</p>
+                <p className="text-lg font-semibold">+234 816 047 2457</p>
                 <p className="text-sm text-muted-foreground">Available 24/7 for emergencies</p>
               </CardContent>
             </Card>
