@@ -3,7 +3,7 @@ import { notFound } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Calendar, Clock, User, ArrowLeft, Twitter, Linkedin, Github } from "lucide-react"
+import { Calendar, Clock, User, ArrowLeft, Twitter, Linkedin, Github, Mail } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import { db } from "@/lib/database"
@@ -89,46 +89,68 @@ export default async function BlogPost({ params }: { params: { slug: string } })
             <div className="mt-8 mb-12 border-t pt-6">
               {(() => {
                 const authorName = post.author_name || post.author || 'ComputersRepairer Team'
-                const profiles: Record<string, { bio: string; twitter?: string; linkedin?: string; github?: string } > = {
+                const profiles: Record<string, { bio: string; twitter?: string; linkedin?: string; github?: string; email?: string } > = {
                   'Tech Support Team': { bio: 'Hands-on technicians sharing practical repair tips and guides.', twitter: 'https://twitter.com/computersrepair', linkedin: 'https://www.linkedin.com/company/computersrepairer', github: 'https://github.com/enyasystem' },
                   'IT Security Team': { bio: 'Security-focused engineers providing guidance on protecting systems and data.', twitter: 'https://twitter.com/computersrepair' },
                   'Hardware Specialists': { bio: 'Upgrade and maintenance guides from experienced hardware technicians.' },
                   'Software Team': { bio: 'Optimization, tooling, and software best-practices for small teams.' },
-                  'ComputersRepairer Team': { bio: 'Graduate of the University of Cross River State (Second Class Upper). Brings practical repair experience together with frontend engineering: performance, accessibility and tooling. He has led repair and optimization projects for SMEs, authored hands-on troubleshooting guides, and builds small utilities to speed diagnostic workflows. He enjoys mentoring junior technicians and producing clear, practical tutorials.' },
+                  'Admin': {
+                    bio: 'Graduate of the University of Cross River State (Second Class Upper). The site administrator combines over a decade of hands-on computer repair, systems maintenance and on-site troubleshooting with frontend engineering expertise — focusing on performance, accessibility, and practical tooling. He has led repair and optimization projects for small and medium businesses, authored numerous how-to guides, and maintains small open-source utilities to automate diagnostics. He runs training sessions for local businesses, mentors junior technicians, and is available for consulting. For quick contact use the email or social links.',
+                    twitter: 'https://twitter.com/computersrepair',
+                    linkedin: 'https://www.linkedin.com/company/computersrepairer',
+                    github: 'https://github.com/enyasystem',
+                    email: 'mailto:hello@computersrepairer.example',
+                  },
+                  'ComputersRepairer Team': {
+                    bio: 'Graduate of the University of Cross River State (Second Class Upper). He combines over a decade of hands-on computer repair and systems maintenance with frontend engineering expertise—focusing on performance, accessibility, and pragmatic tooling. He has led repair and optimization projects for SMEs, authored hands-on troubleshooting guides, and builds small open-source utilities to speed diagnostic workflows. He mentors junior technicians, runs training sessions for local businesses, and is available for consulting and speaking engagements. For quick contact, use the email or social links.',
+                    twitter: 'https://twitter.com/computersrepair',
+                    linkedin: 'https://www.linkedin.com/company/computersrepairer',
+                    github: 'https://github.com/enyasystem',
+                  },
                 }
                 const profile = profiles[authorName] || { bio: 'Graduate of the University of Cross River State (Second Class Upper). Brings practical repair experience together with frontend engineering: performance, accessibility and tooling.' }
                 // Use Unsplash source for avatar (no external config needed)
                 const avatarUrl = `https://source.unsplash.com/collection/888146/160x160?sig=${encodeURIComponent(authorName)}`
 
                 return (
-                  <div className="flex items-start gap-4">
-                    <div className="flex-shrink-0">
-                      <img src={avatarUrl} alt={`${authorName} avatar`} className="w-16 h-16 rounded-full object-cover border" />
+                  <div className="flex items-center gap-4">
+                    <div className="flex-shrink-0 w-16 h-16 overflow-hidden rounded-full border ring-1 ring-primary/10">
+                      <img src={avatarUrl} alt={`${authorName} avatar`} className="w-full h-full object-cover" />
                     </div>
 
                     <div className="min-w-0">
-                        <div className="flex items-center gap-3">
-                          <h4 className="font-semibold text-lg truncate" title={authorName}>{authorName}</h4>
-                          <div className="flex items-center gap-2">
-                            {profile.twitter && (
-                              <a href={profile.twitter} target="_blank" rel="noopener noreferrer" aria-label={`${authorName} on Twitter`} className="text-muted-foreground hover:text-primary">
-                                <Twitter className="w-4 h-4" />
-                              </a>
-                            )}
-                            {profile.linkedin && (
-                              <a href={profile.linkedin} target="_blank" rel="noopener noreferrer" aria-label={`${authorName} on LinkedIn`} className="text-muted-foreground hover:text-primary">
-                                <Linkedin className="w-4 h-4" />
-                              </a>
-                            )}
-                            {profile.github && (
-                              <a href={profile.github} target="_blank" rel="noopener noreferrer" aria-label={`${authorName} on GitHub`} className="text-muted-foreground hover:text-primary">
-                                <Github className="w-4 h-4" />
-                              </a>
-                            )}
-                          </div>
-                        </div>
+                      <div className="flex items-center gap-3">
+                        <h4 className="font-semibold text-lg truncate" title={authorName}>{authorName}</h4>
+                        {/* show a small Admin badge when the author is the admin */}
+                        {authorName === 'Admin' && (
+                          <Badge className="text-xs py-0.5 px-2">Admin</Badge>
+                        )}
 
-                      <p className="text-sm text-muted-foreground mt-1">{profile.bio}</p>
+                        <div className="flex items-center gap-2 ml-auto">
+                          {profile.twitter && (
+                            <a href={profile.twitter} target="_blank" rel="noopener noreferrer" aria-label={`${authorName} on Twitter`} className="text-muted-foreground hover:text-primary">
+                              <Twitter className="w-4 h-4" />
+                            </a>
+                          )}
+                          {profile.linkedin && (
+                            <a href={profile.linkedin} target="_blank" rel="noopener noreferrer" aria-label={`${authorName} on LinkedIn`} className="text-muted-foreground hover:text-primary">
+                              <Linkedin className="w-4 h-4" />
+                            </a>
+                          )}
+                          {profile.github && (
+                            <a href={profile.github} target="_blank" rel="noopener noreferrer" aria-label={`${authorName} on GitHub`} className="text-muted-foreground hover:text-primary">
+                              <Github className="w-4 h-4" />
+                            </a>
+                          )}
+                          {profile.email && (
+                            <a href={profile.email} aria-label={`${authorName} email`} className="text-muted-foreground hover:text-primary">
+                              <Mail className="w-4 h-4" />
+                            </a>
+                          )}
+                        </div>
+                      </div>
+
+                      <p className="text-sm text-muted-foreground mt-2">{profile.bio}</p>
                     </div>
                   </div>
                 )
