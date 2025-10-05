@@ -25,6 +25,7 @@ function getDatabaseUrl() {
     path.resolve(__dirname, '03-add-product-columns.sql'),
     path.resolve(__dirname, '04-add-brand-column.sql'),
     path.resolve(__dirname, '02-seed-data.sql'),
+    path.resolve(__dirname, '02b-seed-more-products-and-posts.sql'),
   ];
 
   try {
