@@ -124,8 +124,7 @@ export default function BookAppointmentPage() {
                       <span className="font-medium">Email:</span> info@computersrepairer.com
                     </p>
                     <p className="text-sm">
-                      <span className="font-medium">Address:</span> 12A Adeola Odeku Street, Victoria Island, Lagos
-                      106104
+                      <span className="font-medium">Address:</span> Shop i83/84 Ikota shopping complex Road 5, Lekki Epe express way.
                     </p>
                   </CardContent>
                 </Card>

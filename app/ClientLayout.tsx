@@ -33,10 +33,10 @@ export default function ClientLayout({
     telephone: "+234-803-000-0000",
     address: {
       "@type": "PostalAddress",
-      streetAddress: "12A Adeola Odeku Street",
-      addressLocality: "Victoria Island",
+      streetAddress: "Shop i83/84 Ikota shopping complex Road 5",
+      addressLocality: "Lekki",
       addressRegion: "Lagos",
-      postalCode: "106104",
+      postalCode: "",
       addressCountry: "NG",
     },
     serviceArea: {

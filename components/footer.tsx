@@ -139,7 +139,7 @@ export function Footer() {
                 <MapPin className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
                 <div>
                   <div className="font-medium text-white">Location</div>
-                  <div className="text-slate-300">12A Adeola Odeku Street, Victoria Island, Lagos</div>
+                  <div className="text-slate-300">Shop i83/84 Ikota shopping complex Road 5, Lekki Epe express way.</div>
                 </div>
               </div>
               <div className="flex items-start gap-3">

@@ -28,7 +28,7 @@ const contactInfo = [
   {
     icon: <MapPin className="h-6 w-6" />,
     title: "Location",
-    details: ["12A Adeola Odeku Street", "Victoria Island, Lagos 106104"],
+    details: ["Shop i83/84 Ikota shopping complex Road 5", "Lekki Epe express way, Lagos"],
     description: "Visit our repair center",
   },
   {

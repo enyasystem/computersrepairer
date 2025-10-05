@@ -28,7 +28,7 @@ export default function AdminSettingsPage() {
     name: "Computer Repair & IT Support Centre",
     email: "info@computersrepairer.com",
     phone: "+234 803 000 0000",
-    address: "12A Adeola Odeku Street, Victoria Island, Lagos 106104",
+  address: "Shop i83/84 Ikota shopping complex Road 5, Lekki Epe express way.",
     description: "Professional computer repair and IT support services for businesses and individuals.",
   })
 

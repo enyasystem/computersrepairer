@@ -54,7 +54,7 @@ export function ContactSection() {
                 <CardDescription>Drop by for in-person service</CardDescription>
               </CardHeader>
               <CardContent>
-                <p className="text-lg font-semibold">12A Adeola Odeku Street, Victoria Island, Lagos 106104</p>
+                <p className="text-lg font-semibold">Shop i83/84 Ikota shopping complex Road 5, Lekki Epe express way.</p>
                 <div className="flex items-center gap-2 mt-2">
                   <Clock className="h-4 w-4 text-muted-foreground" />
                   <p className="text-sm text-muted-foreground">Mon-Fri: 9AM-6PM, Sat: 10AM-4PM</p>
