@@ -3,7 +3,7 @@ import { notFound } from "next/navigation"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Calendar, Clock, User, ArrowLeft } from "lucide-react"
+import { Calendar, Clock, User, ArrowLeft, Twitter, Linkedin, Github } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import { db } from "@/lib/database"
@@ -84,6 +84,56 @@ export default async function BlogPost({ params }: { params: { slug: string } })
               className="prose prose-lg max-w-none prose-headings:text-foreground prose-p:text-muted-foreground prose-strong:text-foreground prose-ul:text-muted-foreground prose-ol:text-muted-foreground"
               dangerouslySetInnerHTML={{ __html: String(post.content || post.body || '') }}
             />
+
+            {/* Author bio block (placed after article content) */}
+            <div className="mt-8 mb-12 border-t pt-6">
+              {(() => {
+                const authorName = post.author_name || post.author || 'ComputersRepairer Team'
+                const profiles: Record<string, { bio: string; twitter?: string; linkedin?: string; github?: string } > = {
+                  'Tech Support Team': { bio: 'Hands-on technicians sharing practical repair tips and guides.', twitter: 'https://twitter.com/computersrepair', linkedin: 'https://www.linkedin.com/company/computersrepairer', github: 'https://github.com/enyasystem' },
+                  'IT Security Team': { bio: 'Security-focused engineers providing guidance on protecting systems and data.', twitter: 'https://twitter.com/computersrepair' },
+                  'Hardware Specialists': { bio: 'Upgrade and maintenance guides from experienced hardware technicians.' },
+                  'Software Team': { bio: 'Optimization, tooling, and software best-practices for small teams.' },
+                  'ComputersRepairer Team': { bio: 'Graduate of the University of Cross River State (Second Class Upper). Brings practical repair experience together with frontend engineering: performance, accessibility and tooling. He has led repair and optimization projects for SMEs, authored hands-on troubleshooting guides, and builds small utilities to speed diagnostic workflows. He enjoys mentoring junior technicians and producing clear, practical tutorials.' },
+                }
+                const profile = profiles[authorName] || { bio: 'Graduate of the University of Cross River State (Second Class Upper). Brings practical repair experience together with frontend engineering: performance, accessibility and tooling.' }
+                // Use Unsplash source for avatar (no external config needed)
+                const avatarUrl = `https://source.unsplash.com/collection/888146/160x160?sig=${encodeURIComponent(authorName)}`
+
+                return (
+                  <div className="flex items-start gap-4">
+                    <div className="flex-shrink-0">
+                      <img src={avatarUrl} alt={`${authorName} avatar`} className="w-16 h-16 rounded-full object-cover border" />
+                    </div>
+
+                    <div className="min-w-0">
+                        <div className="flex items-center gap-3">
+                          <h4 className="font-semibold text-lg truncate" title={authorName}>{authorName}</h4>
+                          <div className="flex items-center gap-2">
+                            {profile.twitter && (
+                              <a href={profile.twitter} target="_blank" rel="noopener noreferrer" aria-label={`${authorName} on Twitter`} className="text-muted-foreground hover:text-primary">
+                                <Twitter className="w-4 h-4" />
+                              </a>
+                            )}
+                            {profile.linkedin && (
+                              <a href={profile.linkedin} target="_blank" rel="noopener noreferrer" aria-label={`${authorName} on LinkedIn`} className="text-muted-foreground hover:text-primary">
+                                <Linkedin className="w-4 h-4" />
+                              </a>
+                            )}
+                            {profile.github && (
+                              <a href={profile.github} target="_blank" rel="noopener noreferrer" aria-label={`${authorName} on GitHub`} className="text-muted-foreground hover:text-primary">
+                                <Github className="w-4 h-4" />
+                              </a>
+                            )}
+                          </div>
+                        </div>
+
+                      <p className="text-sm text-muted-foreground mt-1">{profile.bio}</p>
+                    </div>
+                  </div>
+                )
+              })()}
+            </div>
 
             {/* Call to Action */}
             <div className="mt-12 p-6 bg-primary/5 rounded-lg border border-primary/10">

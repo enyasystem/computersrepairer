@@ -10,7 +10,7 @@ import { formatCurrencyNGN } from '@/lib/format'
 
 type Product = any
 
-export default function ProductListLoader({ initial, renderInitial = true }: { initial: Product[]; renderInitial?: boolean }) {
+export default function ProductListLoader({ initial, renderInitial = true, category }: { initial: Product[]; renderInitial?: boolean; category?: string }) {
   // If renderInitial is false we won't render the server-provided initial items here
   // (they are expected to be rendered by the surrounding server component). We still
   // keep `initial` available for pagination calculations.
@@ -30,7 +30,9 @@ export default function ProductListLoader({ initial, renderInitial = true }: { i
     setLoading(true)
     const next = page + 1
     try {
-      const res = await fetch(`/api/products/list?page=${next}&perPage=${perPage}&activeOnly=1`)
+      const params = new URLSearchParams({ page: String(next), perPage: String(perPage), activeOnly: '1' })
+      if (category) params.set('category', category)
+      const res = await fetch(`/api/products/list?${params.toString()}`)
       const data = await res.json()
       if (data && Array.isArray(data.rows)) {
         setProducts((p) => [...p, ...data.rows])

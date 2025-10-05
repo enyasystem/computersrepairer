@@ -7,7 +7,26 @@ import { db } from "@/lib/database"
 
 export async function BlogSection() {
   // Fetch first 3 published posts using primary to ensure consistency after admin edits
-  const payload = await db.getBlogPostsPaged(1, 3, 'published', { usePrimary: true })
+  // Bypass short-lived in-memory cache to get freshest content.
+  let payload: any
+  try {
+    payload = await db.getBlogPostsPaged(1, 3, 'published', { usePrimary: true, bypassCache: true })
+  } catch (err) {
+    try { console.warn('[v0] BlogSection: getBlogPostsPaged failed, falling back to getBlogPosts()', err) } catch (e) {}
+    payload = null
+  }
+
+  // Fallback: if paged returned unexpectedly small results, try full list
+  if (!payload || ((payload?.total || 0) <= (payload?.rows?.length || 0) && (payload?.total || 0) < 3)) {
+    try {
+      const all = await db.getBlogPosts('published')
+      if (Array.isArray(all)) {
+        payload = { rows: all.slice(0, 3), total: all.length }
+      }
+    } catch (err) {
+      try { console.warn('[v0] BlogSection: fallback getBlogPosts failed', err) } catch (e) {}
+    }
+  }
   const posts: {
     slug: string
     title: string
