@@ -94,10 +94,15 @@ export async function ShopSection() {
         </div>
 
         <div className="text-center mt-12">
-          <Link href="/shop">
-            <Button size="lg" variant="outline">
-              View All Products
-            </Button>
+          <Link
+            href="/shop"
+            role="button"
+            className={cn(
+              buttonVariants({ variant: "outline", size: "lg" }),
+              "hover:scale-105 transition-transform duration-200 group bg-transparent inline-flex items-center justify-center relative z-10 pointer-events-auto"
+            )}
+          >
+            View All Products
           </Link>
         </div>
       </div>

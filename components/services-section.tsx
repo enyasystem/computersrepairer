@@ -1,7 +1,9 @@
 "use client"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
+import Link from "next/link"
 import { Monitor, Network, Wrench } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 
@@ -86,9 +88,16 @@ export function ServicesSection() {
                     </li>
                   ))}
                 </ul>
-                <Button variant="outline" className="w-full bg-transparent hover:scale-105 transition-transform duration-200">
+                <Link
+                  href="/services"
+                  role="button"
+                  className={cn(
+                    buttonVariants({ variant: "outline", size: "default" }),
+                    "w-full bg-transparent hover:scale-105 transition-transform duration-200 inline-flex items-center justify-center"
+                  )}
+                >
                   Learn More
-                </Button>
+                </Link>
               </div>
             </div>
           ))}
