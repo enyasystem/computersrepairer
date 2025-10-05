@@ -5,15 +5,39 @@ import { Star } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { db } from "@/lib/database"
+import { mockProducts } from '@/lib/products'
 import { formatCurrencyNGN } from "@/lib/format"
+import ProductListLoader from '@/components/product-list-loader'
 
 export default async function ShopPage() {
-	// Fetch products from the database (server-side)
-	const paged = await db.getProductsPaged(1, 12, {
-		activeOnly: true,
-		bypassCache: false,
-	})
-	const products = Array.isArray(paged?.rows) ? paged.rows : []
+	// Fetch first page server-side and let the client loader fetch more
+	const perPage = 12
+	let initialProducts: any[] = []
+	try {
+		// Force a fresh, strongly-consistent read from the primary and bypass short-lived cache
+		const paged = await db.getProductsPaged(1, perPage, { activeOnly: true, bypassCache: true, usePrimary: true })
+				initialProducts = Array.isArray(paged?.rows) ? paged.rows : []
+
+				// Diagnostic/fallback: if the paged result looks unexpectedly small (e.g. total <= rows length
+				// and less than perPage) try a direct full list fetch (like blog page uses) to verify DB contents.
+				if ((paged?.total || 0) <= (paged?.rows?.length || 0) && (paged?.total || 0) < perPage) {
+					try {
+						const all = await db.getProducts()
+						if (Array.isArray(all) && all.length > (initialProducts?.length || 0)) {
+							try { console.warn('[v0] /shop: getProductsPaged returned small result; falling back to getProducts()') } catch (e) {}
+							initialProducts = all.slice(0, perPage)
+						}
+					} catch (err2) {
+						try { console.warn('[v0] /shop: fallback getProducts() failed', err2) } catch (e) {}
+					}
+				}
+	} catch (err) {
+		// If DB is not configured (e.g. during local dev without DATABASE_URL) fall back to mock data
+		try {
+			console.warn('[v0] /shop: getProductsPaged failed, falling back to mockProducts', err)
+		} catch (e) {}
+		initialProducts = mockProducts.slice(0, perPage)
+	}
 
 	function StarRating({ rating }: { rating?: number }) {
 		const r = Math.max(0, Math.min(5, Math.floor(Number(rating) || 0)))
@@ -59,59 +83,39 @@ export default async function ShopPage() {
 
 			{/* Products Grid */}
 			<div className="container mx-auto px-4 py-16">
+				{/* Server-render the initial page for fast first paint and SEO */}
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-					{products.map((product: any) => (
+					{initialProducts.map((product: any) => (
 						<Card key={product.id} className="group hover:shadow-lg transition-shadow duration-300 flex flex-col h-full">
 							<CardHeader className="p-0">
 								<div className="relative aspect-square overflow-hidden rounded-t-lg">
-									<Image
-										src={product.image_url || product.image || "/placeholder.svg"}
-										alt={product.name || "Product"}
-										fill
-										className="object-cover group-hover:scale-105 transition-transform duration-300"
-									/>
+									<Image src={product.image_url || product.image || '/placeholder.svg'} alt={product.name || 'Product'} fill className="object-cover group-hover:scale-105 transition-transform duration-300" />
 									{product.badge && (
-										<Badge
-											className={`absolute top-3 left-3 ${
-												product.badge === "Sale"
-													? "bg-red-500 hover:bg-red-600"
-													: product.badge === "New"
-													? "bg-green-500 hover:bg-green-600"
-													: "bg-primary hover:bg-primary/90"
-											}`}
-										>
+										<Badge className="absolute top-3 left-3" variant={product.badge === 'Sale' ? 'destructive' : 'default'}>
 											{product.badge}
 										</Badge>
 									)}
 								</div>
 							</CardHeader>
 							<CardContent className="p-6 flex-1 flex flex-col">
-								<h3 className="font-semibold text-lg mb-2 text-balance">
-									{product.name}
-								</h3>
-								<p className="text-muted-foreground text-sm mb-3 text-pretty">
-									{product.description}
-								</p>
-								<StarRating rating={product.rating} />
+								<h3 className="font-semibold text-lg mb-2 text-balance">{product.name}</h3>
+								<p className="text-muted-foreground text-sm mb-3 text-pretty">{product.description}</p>
 								<div className="flex items-center gap-2 mt-3">
-									<span className="text-2xl font-bold text-primary">
-										{renderPrice(product.price)}
-									</span>
+									<span className="text-2xl font-bold text-primary">{renderPrice(product.price)}</span>
 									{product.original_price && (
-										<span className="text-lg text-muted-foreground line-through">
-											{renderPrice(product.original_price)}
-										</span>
+										<span className="text-lg text-muted-foreground line-through">{renderPrice(product.original_price)}</span>
 									)}
 								</div>
 							</CardContent>
 							<div className="p-6 pt-0 mt-auto">
-								<Link href={`/shop/${product.id}`} className="w-full">
-									<Button className="w-full">View More</Button>
-								</Link>
+								<Link href={`/shop/${product.id}`} className="w-full"><Button className="w-full">View More</Button></Link>
 							</div>
 						</Card>
 					))}
 				</div>
+
+				{/* Client loader will hydrate and manage subsequent pages (server already rendered initial items) */}
+				<ProductListLoader initial={initialProducts} renderInitial={false} />
 			</div>
 		</div>
 	)
