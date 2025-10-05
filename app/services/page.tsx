@@ -1,8 +1,9 @@
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { CheckCircle, Clock, Shield, Wrench, Network, HardDrive, Smartphone, Monitor } from "lucide-react"
 import Link from "next/link"
+import { cn } from "@/lib/utils"
 
 const services = [
 	{
@@ -242,12 +243,26 @@ export default function ServicesPage() {
 						needs
 					</p>
 					<div className="flex flex-col sm:flex-row gap-4 justify-center">
-						<Button asChild size="lg" className="px-8">
-							<Link href="/book-appointment">Schedule Service</Link>
-						</Button>
-						<Button asChild size="lg" variant="outline" className="px-8 bg-transparent">
-							<Link href="/contact">Get Free Quote</Link>
-						</Button>
+						<Link
+							href="/book-appointment"
+							role="button"
+							className={cn(
+								buttonVariants({ size: "lg" }),
+								"px-8 transform-gpu transition-transform duration-150 hover:scale-105 hover:shadow-lg cursor-pointer inline-flex items-center justify-center relative z-10 pointer-events-auto"
+							)}
+						>
+							Schedule Service
+						</Link>
+						<Link
+							href="/contact"
+							role="button"
+							className={cn(
+								buttonVariants({ variant: "outline", size: "lg" }),
+								"px-8 bg-transparent transition-colors duration-150 hover:bg-accent hover:text-accent-foreground hover:shadow inline-flex items-center justify-center relative z-10 pointer-events-auto"
+							)}
+						>
+							Get Free Quote
+						</Link>
 					</div>
 				</div>
 			</section>
