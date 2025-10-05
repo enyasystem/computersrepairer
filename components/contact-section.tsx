@@ -1,5 +1,6 @@
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 import Link from 'next/link'
+import { cn } from "@/lib/utils"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Phone, Mail, MapPin, Clock } from "lucide-react"
 
@@ -65,13 +66,25 @@ export function ContactSection() {
           <div className="bg-primary/5 p-8 rounded-lg">
             <h3 className="text-2xl font-bold mb-6 text-center">Ready to Get Started?</h3>
             <div className="space-y-4">
-              <Button size="lg" className="w-full text-lg">
+              <Link
+                href="/book-appointment"
+                role="button"
+                className={cn(
+                  buttonVariants({ size: "lg" }),
+                  "w-full text-lg px-6 cursor-pointer inline-flex items-center justify-center transform-gpu transition-transform duration-150 hover:scale-105 hover:shadow-lg relative z-10 pointer-events-auto"
+                )}
+              >
                 Schedule a Consultation
-              </Button>
-              <Link href="/contact#contact-form" className="block">
-                <Button variant="outline" size="lg" className="w-full text-lg bg-transparent">
-                  Request a Quote
-                </Button>
+              </Link>
+              <Link
+                href="/contact#contact-form"
+                role="button"
+                className={cn(
+                  buttonVariants({ variant: "outline", size: "lg" }),
+                  "w-full text-lg px-6 bg-transparent transition-colors duration-150 hover:bg-accent hover:text-accent-foreground hover:shadow relative z-10 pointer-events-auto inline-flex items-center justify-center"
+                )}
+              >
+                Request a Quote
               </Link>
               {/* <Button variant="ghost" size="lg" className="w-full text-lg">
                 Emergency Support
