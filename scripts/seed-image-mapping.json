@@ -1,0 +1,91 @@
+{
+  "products": {
+    "RAM-CORSAIR-16GB": [
+      "computer ram",
+      "ram module",
+      "memory module"
+    ],
+    "SSD-SAMSUNG-1TB": [
+      "nvme ssd",
+      "ssd drive",
+      "solid state drive"
+    ],
+    "GPU-RTX3060": [
+      "graphics card",
+      "rtx 3060",
+      "gpu"
+    ],
+    "HDD-SEAGATE-2TB": [
+      "hard drive",
+      "hdd",
+      "seagate"
+    ]
+  },
+  "blog_posts": {
+    "5-signs-computer-needs-repair": [
+      "computer repair",
+      "technician",
+      "repair shop"
+    ],
+    "extend-laptop-battery-life": [
+      "laptop battery",
+      "battery life",
+      "laptop"
+    ],
+    "regular-computer-maintenance": [
+      "computer maintenance",
+      "maintenance checklist"
+    ],
+    "secure-wifi-lagos": [
+      "secure wifi lagos"
+    ],
+    "ssd-for-nigerian-startups": [
+      "ssd for nigerian startups"
+    ],
+    "backup-strategies-nigeria": [
+      "backup strategies nigeria"
+    ],
+    "pc-builds-students-abuja": [
+      "pc builds students abuja"
+    ],
+    "speed-up-older-laptops": [
+      "speed up older laptops"
+    ],
+    "localize-software-nigeria": [
+      "localize software nigeria"
+    ],
+    "network-troubleshooting-home": [
+      "network troubleshooting home"
+    ],
+    "antivirus-small-business": [
+      "antivirus small business"
+    ],
+    "data-recovery-nigeria": [
+      "data recovery nigeria"
+    ],
+    "optimize-office-networks-lagos": [
+      "optimize office networks lagos"
+    ],
+    "buy-refurbished-laptops-nigeria": [
+      "buy refurbished laptops nigeria"
+    ],
+    "future-proof-home-office": [
+      "future proof home office"
+    ],
+    "backup-strategy-small-businesses": [
+      "backup strategy small businesses"
+    ],
+    "troubleshoot-slow-internet": [
+      "troubleshoot slow internet"
+    ],
+    "cloud-storage-options-nigeria": [
+      "cloud storage options nigeria"
+    ],
+    "optimize-gaming-pc-fps": [
+      "optimize gaming pc fps"
+    ],
+    "remote-work-essentials-nigeria": [
+      "remote work essentials nigeria"
+    ]
+  }
+}

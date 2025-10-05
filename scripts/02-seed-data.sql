@@ -13,28 +13,28 @@ INSERT INTO repair_requests (customer_id, device_type, device_model, issue_descr
 (3, 'Phone', 'iPhone 12', 'Cracked screen replacement needed', 'completed', 'low', 120.00),
 (4, 'Tablet', 'iPad Air', 'Battery drains very quickly', 'pending', 'medium', 90.00);
 
--- Upsert sample products (15 items) with images from Unsplash (Nigeria-focused descriptions)
+-- Upsert sample products (15 items) with images from multiple reliable providers (rotated seeds)
 INSERT INTO products (name, description, category, price, stock_quantity, sku, image_url, is_active)
 VALUES
-('Corsair Vengeance RAM 16GB', '16GB DDR4 memory module — popular in Lagos gaming cafes and repair shops', 'Memory', 45000.00, 30, 'RAM-CORSAIR-16GB', 'https://images.unsplash.com/photo-1530597191490-8c8a6b82f6b1?q=80&w=1155&auto=format&fit=crop&ixlib=rb-4.1.0', true),
-('Samsung 970 EVO Plus 1TB', '1TB NVMe SSD — fast storage for Nigerian small businesses and creatives', 'Storage', 85000.00, 20, 'SSD-SAMSUNG-1TB', 'https://images.unsplash.com/photo-1587202372775-1f1b8a6f9c6b?q=80&w=1155&auto=format&fit=crop&ixlib=rb-4.1.0', true),
-('NVIDIA RTX 3060', 'Graphics card for gaming and content creation in Lagos setups', 'Graphics', 280000.00, 10, 'GPU-RTX3060', 'https://images.unsplash.com/photo-1618360125622-9d68f16a0f3d?q=80&w=1155&auto=format&fit=crop&ixlib=rb-4.1.0', true),
-('Seagate Barracuda 2TB HDD', '2TB HDD for backups and media storage in Nigerian offices', 'Storage', 40000.00, 40, 'HDD-SEAGATE-2TB', 'https://images.unsplash.com/photo-1545239351-1141bd82e8a6?q=80&w=1155&auto=format&fit=crop&ixlib=rb-4.1.0', true),
-('Corsair 650W PSU', 'Reliable 650W power supply for desktop builds in Abuja and Lagos', 'Power', 55000.00, 18, 'PSU-CORSAIR-650W', 'https://images.unsplash.com/photo-1582201961738-3d6d9b3b2f5b?q=80&w=1155&auto=format&fit=crop&ixlib=rb-4.1.0', true),
-('ASUS TUF B450 Motherboard', 'Durable AMD B450 motherboard — common in Nigerian budget builds', 'Motherboard', 60000.00, 8, 'MB-ASUS-B450', 'https://images.unsplash.com/photo-1555949963-1f95f5e5b7f4?q=80&w=1155&auto=format&fit=crop&ixlib=rb-4.1.0', true),
-('Kingston A2000 500GB NVMe', '500GB NVMe SSD — affordable choice for local businesses', 'Storage', 42000.00, 25, 'SSD-KINGSTON-500GB', 'https://images.unsplash.com/photo-1587202372775-1f1b8a6f9c6b?q=80&w=1155&auto=format&fit=crop&ixlib=rb-4.1.0', true),
-('Logitech MK270 Keyboard + Mouse', 'Wireless keyboard and mouse combo used widely in Nigerian offices', 'Peripherals', 15000.00, 50, 'PERI-LOGITECH-MK270', 'https://images.unsplash.com/photo-1545231028-1335d9b7b3a3?q=80&w=1155&auto=format&fit=crop&ixlib=rb-4.1.0', true),
-('Dell 24-inch Monitor', '24" Full HD monitor — widely used in Lagos home offices', 'Monitor', 70000.00, 12, 'MON-DEL-24', 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=1155&auto=format&fit=crop&ixlib=rb-4.1.0', true),
-('WD My Passport 1TB', 'Portable 1TB drive for backups and transfers across Nigerian cities', 'Storage', 32000.00, 22, 'EXT-WD-1TB', 'https://images.unsplash.com/photo-1530018607918-5c3f9bfcb1b8?q=80&w=1155&auto=format&fit=crop&ixlib=rb-4.1.0', true),
-('TP-Link Archer AX10 Router', 'WiFi router suitable for small Lagos businesses and remote work', 'Networking', 38000.00, 15, 'ROUTER-TPAX10', 'https://images.unsplash.com/photo-1545231028-1335d9b7b3a3?q=80&w=1155&auto=format&fit=crop&ixlib=rb-4.1.0', true),
-('SanDisk Ultra 128GB MicroSD', '128GB MicroSD for cameras and mobile devices popular in Nigeria', 'Storage', 8000.00, 80, 'SD-SANDISK-128GB', 'https://images.unsplash.com/photo-1526178616693-8d125942ca7e?q=80&w=1155&auto=format&fit=crop&ixlib=rb-4.1.0', true),
-('Cooler Master H500 Case', 'High-airflow ATX case commonly used by PC builders in Nigeria', 'Case', 90000.00, 9, 'CASE-CM-H500', 'https://images.unsplash.com/photo-1545231028-1335d9b7b3a3?q=80&w=1155&auto=format&fit=crop&ixlib=rb-4.1.0', true),
-('Noctua NH-U12S Cooler', 'Quiet CPU cooler for reliable temperatures in hot climates', 'Cooling', 45000.00, 14, 'COOL-NOCTUA-U12S', 'https://images.unsplash.com/photo-1545239351-1141bd82e8a6?q=80&w=1155&auto=format&fit=crop&ixlib=rb-4.1.0', true),
-('Microsoft Surface Pro Charger', 'Charger compatible with Surface Pro devices — replacement available locally', 'Accessories', 20000.00, 35, 'ACC-SURFACE-CHG', 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=1155&auto=format&fit=crop&ixlib=rb-4.1.0', true)
+('Corsair Vengeance RAM 16GB', '16GB DDR4 memory module — popular in Lagos gaming cafes and repair shops', 'Memory', 45000.00, 30, 'RAM-CORSAIR-16GB', 'https://picsum.photos/seed/RAM-CORSAIR-16GB/1200/800', true),
+('Samsung 970 EVO Plus 1TB', '1TB NVMe SSD — fast storage for Nigerian small businesses and creatives', 'Storage', 85000.00, 20, 'SSD-SAMSUNG-1TB', 'https://placehold.co/1200x800/eeeeee/000000?text=SSD-SAMSUNG-1TB', true),
+('NVIDIA RTX 3060', 'Graphics card for gaming and content creation in Lagos setups', 'Graphics', 280000.00, 10, 'GPU-RTX3060', 'https://via.placeholder.com/1200x800.png?text=GPU-RTX3060', true),
+('Seagate Barracuda 2TB HDD', '2TB HDD for backups and media storage in Nigerian offices', 'Storage', 40000.00, 40, 'HDD-SEAGATE-2TB', 'https://dummyimage.com/1200x800/cccccc/000000.png&text=HDD-SEAGATE-2TB', true),
+('Corsair 650W PSU', 'Reliable 650W power supply for desktop builds in Abuja and Lagos', 'Power', 55000.00, 18, 'PSU-CORSAIR-650W', 'https://loremflickr.com/1200/800/psu', true),
+('ASUS TUF B450 Motherboard', 'Durable AMD B450 motherboard — common in Nigerian budget builds', 'Motherboard', 60000.00, 8, 'MB-ASUS-B450', 'https://picsum.photos/seed/MB-ASUS-B450/1200/800', true),
+('Kingston A2000 500GB NVMe', '500GB NVMe SSD — affordable choice for local businesses', 'Storage', 42000.00, 25, 'SSD-KINGSTON-500GB', 'https://placehold.co/1200x800/eeeeee/000000?text=SSD-KINGSTON-500GB', true),
+('Logitech MK270 Keyboard + Mouse', 'Wireless keyboard and mouse combo used widely in Nigerian offices', 'Peripherals', 15000.00, 50, 'PERI-LOGITECH-MK270', 'https://via.placeholder.com/1200x800.png?text=PERI-LOGITECH-MK270', true),
+('Dell 24-inch Monitor', '24" Full HD monitor — widely used in Lagos home offices', 'Monitor', 70000.00, 12, 'MON-DEL-24', 'https://dummyimage.com/1200x800/cccccc/000000.png&text=MON-DEL-24', true),
+('WD My Passport 1TB', 'Portable 1TB drive for backups and transfers across Nigerian cities', 'Storage', 32000.00, 22, 'EXT-WD-1TB', 'https://loremflickr.com/1200/800/external-hard-drive', true),
+('TP-Link Archer AX10 Router', 'WiFi router suitable for small Lagos businesses and remote work', 'Networking', 38000.00, 15, 'ROUTER-TPAX10', 'https://picsum.photos/seed/ROUTER-TPAX10/1200/800', true),
+('SanDisk Ultra 128GB MicroSD', '128GB MicroSD for cameras and mobile devices popular in Nigeria', 'Storage', 8000.00, 80, 'SD-SANDISK-128GB', 'https://placehold.co/1200x800/eeeeee/000000?text=SD-SANDISK-128GB', true),
+('Cooler Master H500 Case', 'High-airflow ATX case commonly used by PC builders in Nigeria', 'Case', 90000.00, 9, 'CASE-CM-H500', 'https://via.placeholder.com/1200x800.png?text=CASE-CM-H500', true),
+('Noctua NH-U12S Cooler', 'Quiet CPU cooler for reliable temperatures in hot climates', 'Cooling', 45000.00, 14, 'COOL-NOCTUA-U12S', 'https://dummyimage.com/1200x800/cccccc/000000.png&text=COOL-NOCTUA-U12S', true),
+('Microsoft Surface Pro Charger', 'Charger compatible with Surface Pro devices — replacement available locally', 'Accessories', 20000.00, 35, 'ACC-SURFACE-CHG', 'https://loremflickr.com/1200/800/charger', true)
 ON CONFLICT (sku) DO UPDATE
 	SET name = EXCLUDED.name,
 			description = EXCLUDED.description,
-			category = EXCLUDED.category,
+		category = EXCLUDED.category,
 	price = EXCLUDED.price,
 			stock_quantity = EXCLUDED.stock_quantity,
 			image_url = EXCLUDED.image_url,
