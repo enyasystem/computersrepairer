@@ -9,26 +9,45 @@ import { mockProducts } from '@/lib/products'
 import { formatCurrencyNGN } from "@/lib/format"
 import ProductListLoader from '@/components/product-list-loader'
 
-export default async function ShopPage() {
+export default async function ShopPage({ searchParams }: { searchParams?: { [key: string]: string | string[] } }) {
 	// Fetch first page server-side and let the client loader fetch more
 	const perPage = 12
 	let initialProducts: any[] = []
+	// Detect optional category filter from query string (e.g. /shop?category=accessories)
+	const rawCategory = Array.isArray(searchParams?.category) ? searchParams?.category[0] : searchParams?.category
+	const category = rawCategory ? String(rawCategory).trim() : undefined
 	try {
-		// Force a fresh, strongly-consistent read from the primary and bypass short-lived cache
-		const paged = await db.getProductsPaged(1, perPage, { activeOnly: true, bypassCache: true, usePrimary: true })
-				initialProducts = Array.isArray(paged?.rows) ? paged.rows : []
-
-				// Diagnostic/fallback: if the paged result looks unexpectedly small (e.g. total <= rows length
-				// and less than perPage) try a direct full list fetch (like blog page uses) to verify DB contents.
-				if ((paged?.total || 0) <= (paged?.rows?.length || 0) && (paged?.total || 0) < perPage) {
+				if (category) {
+					// If a category filter is present, fetch all active products and filter server-side.
+					// This mirrors the blog approach and guarantees we show the correct category results.
 					try {
 						const all = await db.getProducts()
-						if (Array.isArray(all) && all.length > (initialProducts?.length || 0)) {
-							try { console.warn('[v0] /shop: getProductsPaged returned small result; falling back to getProducts()') } catch (e) {}
-							initialProducts = all.slice(0, perPage)
+						if (Array.isArray(all)) {
+							const filtered = all.filter((p: any) => String(p.category || '').toLowerCase() === String(category).toLowerCase())
+							initialProducts = filtered.slice(0, perPage)
 						}
 					} catch (err2) {
-						try { console.warn('[v0] /shop: fallback getProducts() failed', err2) } catch (e) {}
+						try { console.warn('[v0] /shop: getProducts() fallback failed', err2) } catch (e) {}
+						// fallback to paged below
+					}
+				}
+				// If no category or fallback didn't populate, use the paged read
+				if (!initialProducts.length) {
+					// Force a fresh, strongly-consistent read from the primary and bypass short-lived cache
+					const paged = await db.getProductsPaged(1, perPage, { activeOnly: true, bypassCache: true, usePrimary: true })
+					initialProducts = Array.isArray(paged?.rows) ? paged.rows : []
+
+					// Diagnostic/fallback: if the paged result looks unexpectedly small try a direct full list fetch
+					if ((paged?.total || 0) <= (paged?.rows?.length || 0) && (paged?.total || 0) < perPage) {
+						try {
+							const all = await db.getProducts()
+							if (Array.isArray(all) && all.length > (initialProducts?.length || 0)) {
+								try { console.warn('[v0] /shop: getProductsPaged returned small result; falling back to getProducts()') } catch (e) {}
+								initialProducts = all.slice(0, perPage)
+							}
+						} catch (err2) {
+							try { console.warn('[v0] /shop: fallback getProducts() failed', err2) } catch (e) {}
+						}
 					}
 				}
 	} catch (err) {
@@ -115,7 +134,7 @@ export default async function ShopPage() {
 				</div>
 
 				{/* Client loader will hydrate and manage subsequent pages (server already rendered initial items) */}
-				<ProductListLoader initial={initialProducts} renderInitial={false} />
+				<ProductListLoader initial={initialProducts} renderInitial={false} category={category} />
 			</div>
 		</div>
 	)
