@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     locale: "en_US",
     images: [
       {
-        url: "/computer repairers logo.png",
+        url: "/computer-repairers-logo.png",
         width: 1200,
         height: 630,
         alt: "ComputersRepairer - Professional IT Support & Computer Repair Services",
@@ -54,7 +54,7 @@ export const metadata: Metadata = {
       "Expert computer repair, IT support, and networking services. Professional, reliable, and affordable solutions.",
     images: [
       {
-        url: "/computer repairers logo.png",
+        url: "/computer-repairers-logo.png",
         alt: "ComputersRepairer - Professional IT Support & Computer Repair Services",
       },
       { url: "/computer-repairers-logo.png", alt: "ComputersRepairer - Professional IT Support & Computer Repair Services" },
@@ -76,7 +76,7 @@ export const metadata: Metadata = {
   icons: {
     icon: [
       // Preferred: user-provided PNG (existing file in public/)
-      { url: "/computer repairers logo.png", sizes: "any", type: "image/png" },
+      { url: "/computer-repairers-logo.png", sizes: "any", type: "image/png" },
       { url: "/favicon.png", sizes: "any", type: "image/svg+xml" },
       { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
       { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
