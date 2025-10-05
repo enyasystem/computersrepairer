@@ -12,10 +12,8 @@ const nextConfig = {
       // Example: allow public assets delivered via the Supabase storage CDN
       { protocol: 'https', hostname: '*.supabase.co', pathname: '/**' },
       { protocol: 'https', hostname: 'lh3.googleusercontent.com', pathname: '/**' },
-      // allow images from source.unsplash (used by some placeholders)
-      { protocol: 'https', hostname: 'source.unsplash.com', pathname: '/**' },
-      // allow images loaded from images.unsplash.com (full-resolution Unsplash URLs)
-      { protocol: 'https', hostname: 'images.unsplash.com', pathname: '/**' }
+  // allow images loaded from images.unsplash.com (full-resolution Unsplash URLs)
+  { protocol: 'https', hostname: 'images.unsplash.com', pathname: '/**' }
     ]
   },
 }

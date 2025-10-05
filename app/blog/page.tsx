@@ -6,6 +6,7 @@ import { Calendar, Clock, ArrowRight } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import { db } from "@/lib/database"
+import BlogListLoader from '@/components/blog-list-loader'
 
 export const metadata: Metadata = {
   title: "Blog - Computer Repair & IT Support Centre",
@@ -13,9 +14,10 @@ export const metadata: Metadata = {
 }
 
 export default async function BlogPage() {
-  // Fetch published posts from the database (server-side)
-  const paged = await db.getBlogPostsPaged(1, 12, 'published')
-  const posts = Array.isArray(paged?.rows) ? paged.rows : []
+  // Fetch first page server-side and let the client loader fetch more
+  const perPage = 6
+  const paged = await db.getBlogPostsPaged(1, perPage, 'published')
+  const initialPosts = Array.isArray(paged?.rows) ? paged.rows : []
 
   return (
     <div className="min-h-screen bg-background">
@@ -33,61 +35,8 @@ export default async function BlogPage() {
 
       {/* Blog Grid */}
       <div className="container mx-auto px-4 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {posts.map((post: any) => (
-            <Card key={post.slug} className="group hover:shadow-lg transition-all duration-300 border-border/50">
-              <div className="relative overflow-hidden rounded-t-lg">
-                <Image
-                  src={post.featured_image || post.image || "/placeholder.svg"}
-                  alt={post.title}
-                  width={500}
-                  height={300}
-                  className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-                <Badge className="absolute top-4 left-4 bg-primary text-primary-foreground">{post.category}</Badge>
-              </div>
-
-              <CardHeader className="pb-3">
-                <CardTitle className="text-xl group-hover:text-primary transition-colors duration-200 line-clamp-2">
-                  {post.title}
-                </CardTitle>
-              </CardHeader>
-
-              <CardContent className="space-y-4">
-                <p className="text-muted-foreground line-clamp-3">{post.excerpt}</p>
-
-                <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                  <div className="flex items-center gap-1">
-                    <Calendar className="w-4 h-4" />
-                    {new Date(post.published_at || post.date || post.created_at).toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric",
-                    })}
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Clock className="w-4 h-4" />
-                    {post.read_time || post.readTime || post.read_time_min || '—'}
-                  </div>
-                </div>
-
-                <Link href={`/blog/${post.slug}`}>
-                  <Button variant="outline" className="w-full group/btn bg-transparent">
-                    Read More
-                    <ArrowRight className="w-4 h-4 ml-2 group-hover/btn:translate-x-1 transition-transform" />
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {/* Load More Button */}
-        <div className="text-center mt-12">
-          <Button size="lg" variant="outline" className="px-8 bg-transparent">
-            Load More Articles
-          </Button>
-        </div>
+        <BlogListLoader initial={initialPosts} />
+        
       </div>
     </div>
   )
