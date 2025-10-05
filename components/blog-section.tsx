@@ -1,7 +1,8 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 import { Calendar, ArrowRight } from "lucide-react"
 import Link from "next/link"
+import { cn } from "@/lib/utils"
 import { db } from "@/lib/database"
 
 export async function BlogSection() {
@@ -44,13 +45,15 @@ export async function BlogSection() {
               className="card overflow-hidden transform-gpu hover:scale-105 hover:-translate-y-2 transition-all duration-500"
               style={{ transitionDelay: `${index * 150 + 200}ms`, transitionDuration: '700ms' }}
             >
-              <div className="aspect-[16/9] bg-muted overflow-hidden">
-                <img
-                  src={post.image || '/placeholder.svg'}
-                  alt={post.title}
-                  className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
-                />
-              </div>
+              <Link href={`/blog/${post.slug}`} className="block group">
+                <div className="aspect-[16/9] bg-muted overflow-hidden">
+                  <img
+                    src={post.image || '/placeholder.svg'}
+                    alt={post.title}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                </div>
+              </Link>
 
               <div className="p-4">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
@@ -59,20 +62,24 @@ export async function BlogSection() {
                   <span>•</span>
                   <span>{post.readTime}</span>
                 </div>
-                <h3 className="text-lg font-semibold text-balance hover:text-primary transition-colors duration-200 mb-2">
-                  {post.title}
+                <h3 className="text-lg font-semibold text-balance transition-colors duration-200 mb-2">
+                  <Link href={`/blog/${post.slug}`} className="hover:text-primary">
+                    {post.title}
+                  </Link>
                 </h3>
                 <p className="text-pretty mb-4">{post.description}</p>
 
                 <div className="mt-2">
-                  <Link href={`/blog/${post.slug}`}>
-                    <Button
-                      variant="ghost"
-                      className="p-0 h-auto font-semibold text-primary hover:translate-x-1 transition-transform duration-200 group"
-                    >
-                      Read More
-                      <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                    </Button>
+                  <Link
+                    href={`/blog/${post.slug}`}
+                    className={cn(
+                      buttonVariants({ variant: "ghost" }),
+                      "p-0 h-auto font-semibold text-primary transition-transform duration-200 group inline-flex items-center"
+                    )}
+                    role="button"
+                  >
+                    Read More
+                    <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </div>
               </div>
@@ -81,11 +88,16 @@ export async function BlogSection() {
         </div>
 
         <div className="text-center mt-12">
-          <Link href="/blog">
-            <Button variant="outline" size="lg" className="hover:scale-105 transition-transform duration-200 group bg-transparent">
-              View All Posts
-              <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-            </Button>
+          <Link
+            href="/blog"
+            role="button"
+            className={cn(
+              buttonVariants({ variant: "outline", size: "lg" }),
+              "hover:scale-105 transition-transform duration-200 group bg-transparent inline-flex items-center justify-center relative z-10 pointer-events-auto"
+            )}
+          >
+            View All Posts
+            <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
       </div>

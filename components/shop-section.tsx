@@ -1,5 +1,6 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { ShoppingCart, Star } from "lucide-react"
 import Link from "next/link"
@@ -31,14 +32,16 @@ export async function ShopSection() {
           {products.map((product: any, index: number) => (
             <Card key={product.id || index} className="overflow-hidden hover:shadow-lg transition-shadow flex flex-col h-full">
               <div className="relative">
-                <div className="aspect-square bg-muted">
-                  <Image
-                    src={product.image_url || product.image || "/placeholder.svg"}
-                    alt={product.name || 'Product'}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
+                <Link href={`/shop/${product.id}`} className="block group">
+                  <div className="aspect-square bg-muted overflow-hidden">
+                    <Image
+                      src={product.image_url || product.image || "/placeholder.svg"}
+                      alt={product.name || 'Product'}
+                      fill
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  </div>
+                </Link>
                 {product.badge && (
                   <Badge
                     className="absolute top-3 left-3"
@@ -58,7 +61,11 @@ export async function ShopSection() {
                   ))}
                   <span className="text-sm text-muted-foreground ml-2">({product.rating ?? 0})</span>
                 </div>
-                <CardTitle className="text-lg text-balance">{product.name}</CardTitle>
+                <CardTitle className="text-lg text-balance">
+                  <Link href={`/shop/${product.id}`} className="hover:text-primary">
+                    {product.name}
+                  </Link>
+                </CardTitle>
                 <CardDescription className="text-pretty">{product.description}</CardDescription>
               </CardHeader>
               <CardContent className="flex-1 flex flex-col">
@@ -69,11 +76,16 @@ export async function ShopSection() {
                   )}
                 </div>
                 <div className="mt-auto w-full">
-                  <Link href={`/shop/${product.id}`} className="w-full">
-                    <Button className="w-full">
-                      <ShoppingCart className="mr-2 h-4 w-4" />
-                      View Product
-                    </Button>
+                  <Link
+                    href={`/shop/${product.id}`}
+                    role="button"
+                    className={cn(
+                      buttonVariants({ size: "default" }),
+                      "w-full inline-flex items-center justify-center px-4 relative z-10 pointer-events-auto"
+                    )}
+                  >
+                    <ShoppingCart className="mr-2 h-4 w-4" />
+                    View Product
                   </Link>
                 </div>
               </CardContent>
