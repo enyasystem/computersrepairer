@@ -30,10 +30,10 @@ export async function ShopSection() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {products.map((product: any, index: number) => (
-            <Card key={product.id || index} className="overflow-hidden hover:shadow-lg transition-shadow flex flex-col h-full">
-              <div className="relative">
+            <Card key={product.id || index} className="overflow-hidden hover:shadow-lg transition-shadow flex flex-col h-full py-0">
+              <CardHeader className="p-0 relative">
                 <Link href={`/shop/${product.id}`} className="block group">
-                  <div className="aspect-square bg-muted overflow-hidden">
+                  <div className="aspect-square bg-muted overflow-hidden rounded-t-xl">
                     <Image
                       src={product.image_url || product.image || "/placeholder.svg"}
                       alt={product.name || 'Product'}
@@ -44,14 +44,14 @@ export async function ShopSection() {
                 </Link>
                 {product.badge && (
                   <Badge
-                    className="absolute top-3 left-3"
+                    className="absolute top-3 left-3 z-10"
                     variant={product.badge === "Sale" ? "destructive" : "default"}
                   >
                     {product.badge}
                   </Badge>
                 )}
-              </div>
-              <CardHeader>
+              </CardHeader>
+              <div className="px-6 pt-4">
                 <div className="flex items-center gap-1 mb-2">
                   {[...Array(5)].map((_, i) => (
                     <Star
@@ -61,13 +61,13 @@ export async function ShopSection() {
                   ))}
                   <span className="text-sm text-muted-foreground ml-2">({product.rating ?? 0})</span>
                 </div>
-                <CardTitle className="text-lg text-balance">
+                <h3 className="text-lg font-semibold text-balance mb-1">
                   <Link href={`/shop/${product.id}`} className="hover:text-primary">
                     {product.name}
                   </Link>
-                </CardTitle>
-                <CardDescription className="text-pretty">{product.description}</CardDescription>
-              </CardHeader>
+                </h3>
+                <p className="text-pretty mb-0">{product.description}</p>
+              </div>
               <CardContent className="flex-1 flex flex-col">
                 <div className="flex items-center gap-2 mb-4">
                   <span className="text-2xl font-bold text-primary">{renderPrice(product.price)}</span>
