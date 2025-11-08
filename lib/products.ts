@@ -44,6 +44,7 @@ export const productCategories: ProductCategory[] = [
   { id: "5", name: "Storage", slug: "storage", description: "Hard drives and SSDs" },
   { id: "6", name: "Monitors", slug: "monitors", description: "Computer monitors and displays" },
   { id: "7", name: "Networking", slug: "networking", description: "Routers and network equipment" },
+  { id: "8", name: "Software", slug: "software", description: "Software, licenses and digital downloads" },
 ]
 
 // Mock products with enhanced data structure
