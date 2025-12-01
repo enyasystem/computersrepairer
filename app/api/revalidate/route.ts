@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { revalidatePath } from 'next/cache'
+import { cacheClearPrefix } from '@/lib/cache'
 
 // POST or GET /api/revalidate
 // - secure with env var REVALIDATE_TOKEN (or REVALIDATE_SECRET)
@@ -18,6 +19,13 @@ function parsePathsFromQuery(url: URL) {
 }
 
 async function handleRevalidate(paths: string[]) {
+  // Clear application-level product caches (Redis or local) so API/page caches reflect new DB rows.
+  try {
+    await cacheClearPrefix('products:')
+    try { console.log('[v0] Cleared product cache prefix') } catch (e) {}
+  } catch (e) {
+    try { console.warn('[v0] Failed to clear product cache prefix', e) } catch (e) {}
+  }
   for (const p of paths) {
     try {
       revalidatePath(p)
