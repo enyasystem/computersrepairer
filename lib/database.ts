@@ -141,7 +141,8 @@ export const db = {
       const result = await sql`
         SELECT * FROM public.products 
         WHERE is_active = true
-        ORDER BY category, name
+        -- Show newest products first by default so recently added items appear on public pages
+        ORDER BY created_at DESC
       `
       return result
     })
@@ -173,13 +174,14 @@ export const db = {
       ? client`
           SELECT * FROM public.products
           WHERE is_active = true
-          ORDER BY category, name
+          -- Show newest products first so shop displays recent additions first
+          ORDER BY created_at DESC
           LIMIT ${perPage}
           OFFSET ${offset}
         `
       : client`
           SELECT * FROM public.products
-          ORDER BY category, name
+          ORDER BY created_at DESC
           LIMIT ${perPage}
           OFFSET ${offset}
         `
@@ -252,7 +254,7 @@ export const db = {
         // ignore URL parse errors
       }
 
-      const result = await sql`
+      const result = await primarySql`
         INSERT INTO products (
           name, description, full_description, price, original_price, 
           category, brand, sku, image_url, in_stock, stock_quantity, 
@@ -306,7 +308,7 @@ export const db = {
   }) {
     // Build a dynamic SET clause using SQL tagged template interpolation
     try {
-      const result = await sql`
+      const result = await primarySql`
         UPDATE products SET
           name = COALESCE(${product.name}, name),
           description = COALESCE(${product.description}, description),
@@ -506,7 +508,7 @@ export const db = {
 
   async deleteBlogPost(id: number) {
     try {
-      const result = await sql`
+      const result = await primarySql`
         DELETE FROM blog_posts WHERE id = ${id} RETURNING *
       `
       return result[0]
