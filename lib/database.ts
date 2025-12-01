@@ -27,12 +27,15 @@ try {
 
 // Create a SQL client using Neon
 export const sql = neon(databaseUrl)
-// For local/dev consistency: force primarySql to use DATABASE_URL to ensure reads/writes go to the same DB.
-// NOTE: In production you may prefer to set DATABASE_PRIMARY_URL to a dedicated writer connection.
-if (process.env.DATABASE_PRIMARY_URL && process.env.DATABASE_PRIMARY_URL !== process.env.DATABASE_URL) {
-  try { console.warn('[v0] DATABASE_PRIMARY_URL is set but will be ignored in favor of DATABASE_URL for local consistency') } catch (e) {}
+// Create a separate client for primary/writer operations. Honor `DATABASE_PRIMARY_URL`
+// when provided (useful in production where reads may be routed via a pooler/replica).
+const primaryDatabaseUrl = process.env.DATABASE_PRIMARY_URL || databaseUrl
+if (process.env.DATABASE_PRIMARY_URL && process.env.DATABASE_PRIMARY_URL !== databaseUrl) {
+  try {
+    console.log('[v0] DATABASE_PRIMARY_URL detected; primary reads/writes will use this connection')
+  } catch (e) {}
 }
-export const primarySql = neon(databaseUrl)
+export const primarySql = neon(primaryDatabaseUrl)
 
 // simple retry helper for transient network/DNS/fetch failures
 const DEFAULT_DB_RETRIES = 8
