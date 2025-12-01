@@ -17,6 +17,7 @@ import { ArrowLeft, Save, Eye, Upload } from "lucide-react"
 export default function EditProductForm({ product }: { product: Product }) {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
+  const [imageFile, setImageFile] = useState<File | null>(null)
   const [specs, setSpecs] = useState(() => {
     try {
       return product.specifications || {}
@@ -56,6 +57,10 @@ export default function EditProductForm({ product }: { product: Product }) {
     try {
       const fd = new FormData()
       Object.entries(formData).forEach(([k, v]) => fd.append(k, String(v)))
+      // If an image file was selected, include it so the server action can upload it
+      if (imageFile) {
+        fd.append('imageFile', imageFile)
+      }
       fd.set('status', status)
       fd.append('specifications', JSON.stringify(specs || {}))
       await updateProduct(fd)
@@ -71,6 +76,7 @@ export default function EditProductForm({ product }: { product: Product }) {
     if (file) {
       const url = URL.createObjectURL(file)
       setFormData((prev) => ({ ...prev, image: url }))
+      setImageFile(file)
     }
   }
 
