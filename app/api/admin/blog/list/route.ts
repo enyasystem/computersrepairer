@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/database'
 
+// This route depends on incoming request details (query params) and auth;
+// ensure Next treats it as dynamic to avoid static prerender-time errors.
+export const dynamic = "force-dynamic"
+
 export async function GET(request: Request) {
   try {
     const url = new URL(request.url)

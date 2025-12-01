@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server'
 import { sql, primarySql } from '@/lib/database'
 import { requireAdmin } from '@/lib/serverAuth'
 
+export const dynamic = "force-dynamic"
+
 // Debug endpoint for local dev only: returns counts/rows from both sql and primarySql and clears caches
 export async function GET(request: Request) {
   const auth = requireAdmin(request)

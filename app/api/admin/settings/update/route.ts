@@ -4,6 +4,8 @@ import { setAdminCreds } from '@/lib/adminCreds'
 import bcrypt from 'bcryptjs'
 import { sql } from '@/lib/database'
 
+export const dynamic = "force-dynamic"
+
 export async function POST(request: Request) {
   const auth = requireAdmin(request)
   if (!auth.ok) return auth.response

@@ -2,6 +2,8 @@ import { NextResponse } from "next/server"
 import { sql } from "@/lib/database"
 import { requireAdmin } from '@/lib/serverAuth'
 
+export const dynamic = "force-dynamic"
+
 export async function POST(request: Request) {
   const auth = requireAdmin(request)
   if (!auth.ok) return auth.response

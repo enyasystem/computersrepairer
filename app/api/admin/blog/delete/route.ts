@@ -3,6 +3,8 @@ import { primarySql } from '@/lib/database'
 import { requireAdmin } from '@/lib/serverAuth'
 import { revalidatePath } from 'next/cache'
 
+export const dynamic = "force-dynamic"
+
 export async function POST(request: Request) {
   const auth = requireAdmin(request)
   if (!auth.ok) return auth.response
